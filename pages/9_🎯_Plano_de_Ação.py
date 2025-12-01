@@ -412,7 +412,7 @@ quick_wins_data = [
 
 try:
     pdf_data = generate_executive_summary_pdf(pdf_metrics, quick_wins_data)
-    create_pdf_download_button(pdf_data, "plano_acao_iev_bauru.pdf", "📥 Baixar Plano de Ação em PDF")
+    create_pdf_download_button(pdf_data, "plano_acao_comercial.pdf", "📥 Baixar Plano de Ação em PDF")
 except Exception as e:
     st.info("💡 A funcionalidade de PDF está disponível. Pressione o botão acima para baixar.")
 
