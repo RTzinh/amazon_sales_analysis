@@ -76,7 +76,7 @@ st.dataframe(
                             'Net_Revenue': '${:,.2f}',
                             'Avg_Margin': '{:.1f}%'
                         }),
-    use_container_width=True,
+    width='stretch',
     height=300
 )
 
@@ -111,7 +111,7 @@ with col1:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("### 📈 Margem vs Desconto por Categoria")
@@ -140,7 +140,7 @@ with col2:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -199,7 +199,7 @@ fig.update_layout(
     margin=dict(l=200)
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -236,7 +236,7 @@ with col1:
         title='Top 15 Marcas por Receita'
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     top_brand = df.groupby('Brand')['TotalAmount'].sum().idxmax()
@@ -292,7 +292,7 @@ fig.update_layout(
     height=500
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 

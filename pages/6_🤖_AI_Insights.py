@@ -99,7 +99,7 @@ with tab1:
     st.markdown("### 🧠 Insights de Negócio Gerados por IA")
     st.markdown("A IA analisa seus dados e gera recomendações acionáveis automaticamente.")
     
-    if st.button("🔄 Gerar Insights", type="primary", use_container_width=True):
+    if st.button("🔄 Gerar Insights", type="primary", width='stretch'):
         with st.spinner("🤖 Gemini está analisando seus dados..."):
             try:
                 insights = generate_business_insights(df, metrics, api_key)
@@ -157,7 +157,7 @@ with tab2:
         height=100
     )
     
-    if st.button("🤖 Perguntar ao Agente", type="primary", use_container_width=True):
+    if st.button("🤖 Perguntar ao Agente", type="primary", width='stretch'):
         if question:
             with st.spinner("🤖 Agente LangChain está processando sua pergunta..."):
                 try:
@@ -181,7 +181,7 @@ with tab3:
     st.markdown("### 📈 Análise de Tendências com IA")
     st.markdown("O Gemini analisa padrões temporais e fornece previsões qualitativas.")
     
-    if st.button("📊 Analisar Tendências", type="primary", use_container_width=True):
+    if st.button("📊 Analisar Tendências", type="primary", width='stretch'):
         with st.spinner("🤖 Analisando tendências de vendas..."):
             try:
                 trend_analysis = analyze_sales_trends(df, api_key)
@@ -219,7 +219,7 @@ with tab3:
                     height=400
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
                 
             except Exception as e:
                 st.error(f"Erro na análise: {str(e)}")
@@ -229,7 +229,7 @@ with tab4:
     st.markdown("### 🎯 Análise de Performance de Categorias com IA")
     st.markdown("Insights profundos sobre o desempenho de cada categoria de produto.")
     
-    if st.button("🔍 Analisar Categorias", type="primary", use_container_width=True):
+    if st.button("🔍 Analisar Categorias", type="primary", width='stretch'):
         with st.spinner("🤖 Analisando performance das categorias..."):
             try:
                 category_analysis = analyze_category_performance(df, api_key)
@@ -269,7 +269,7 @@ with tab4:
                     height=400
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
                 
             except Exception as e:
                 st.error(f"Erro na análise: {str(e)}")
@@ -287,7 +287,7 @@ with tab5:
         help="Porcentagem de dados que serão considerados anômalos"
     ) / 100
     
-    if st.button("🔍 Detectar Anomalias", type="primary", use_container_width=True):
+    if st.button("🔍 Detectar Anomalias", type="primary", width='stretch'):
         with st.spinner("🤖 Executando detecção de anomalias..."):
             try:
                 anomalies = detect_anomalies(df, contamination)
@@ -340,7 +340,7 @@ with tab5:
                     height=500
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
                 
                 # Anomaly table
                 st.markdown("### 📋 Top 20 Anomalias")
@@ -356,7 +356,7 @@ with tab5:
                         'UnitPrice': '${:,.2f}',
                         'Discount': '{:.1%}'
                     }),
-                    use_container_width=True,
+                    width='stretch',
                     height=400
                 )
                 

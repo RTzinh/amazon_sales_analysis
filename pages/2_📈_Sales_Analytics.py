@@ -102,7 +102,7 @@ fig.update_layout(
     )
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -152,7 +152,7 @@ fig.update_layout(
     )
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -196,7 +196,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("### 📆 Vendas por Dia da Semana")
@@ -228,7 +228,7 @@ with col2:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -263,7 +263,7 @@ if freq == 'M':
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     
     # Growth stats
     col1, col2, col3 = st.columns(3)

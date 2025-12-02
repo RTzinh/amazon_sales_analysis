@@ -87,7 +87,7 @@ fig.update_layout(
     height=500
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -123,7 +123,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("### 📦 Pedidos por País")
@@ -151,7 +151,7 @@ with col2:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -173,7 +173,7 @@ st.dataframe(
                                     'Receita': '${:,.2f}',
                                     'Pedidos': '{:,.0f}'
                                 }),
-    use_container_width=True,
+    width='stretch',
     height=400
 )
 
@@ -217,7 +217,7 @@ fig.update_layout(
     height=450
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -255,7 +255,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### Custo de Frete vs Valor do Pedido")
@@ -283,7 +283,7 @@ with col2:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -315,7 +315,7 @@ st.dataframe(
                               'Desconto Médio': '{:.1%}',
                               'Clientes': '{:,.0f}'
                           }),
-    use_container_width=True
+    width='stretch'
 )
 
 st.markdown("---")

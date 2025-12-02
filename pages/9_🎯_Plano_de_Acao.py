@@ -309,7 +309,7 @@ timeline = pd.DataFrame({
     'Mês_3': ['Mensurar', 'Otimizar', 'Monitorar', 'Equalizar', 'Expandir']
 })
 
-st.dataframe(timeline, use_container_width=True, hide_index=True)
+st.dataframe(timeline, width='stretch', hide_index=True)
 
 st.markdown("---")
 
@@ -369,7 +369,7 @@ st.dataframe(
         'Retorno_Estimado': 'R$ {:,.2f}',
         'ROI_%': '{:.1f}%'
     }).background_gradient(cmap='Greens', subset=['ROI_%']),
-    use_container_width=True,
+    width='stretch',
     hide_index=True
 )
 
@@ -411,7 +411,7 @@ quick_wins_data = [
     }
 ]
 
-if st.button("Gerar Relatorio PDF", type="primary", use_container_width=True):
+if st.button("Gerar Relatorio PDF", type="primary", width='stretch'):
     with st.spinner("Gerando relatorio em PDF..."):
         pdf_data = generate_executive_summary_pdf(pdf_metrics, quick_wins_data)
     create_pdf_download_button(pdf_data, "plano_acao_comercial.pdf", "Baixar Plano de Acao em PDF")

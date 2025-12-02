@@ -118,7 +118,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     fig = go.Figure()
@@ -145,7 +145,7 @@ with col2:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # Cancellation rate table
 st.dataframe(
@@ -155,7 +155,7 @@ st.dataframe(
                                     'Valor_Perdido': 'R$ {:,.2f}',
                                     'Taxa_%': '{:.2f}%'
                                 }),
-    use_container_width=True
+    width='stretch'
 )
 
 st.markdown("---")
@@ -215,7 +215,7 @@ with col1:
         height=500
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### ⚠️ Produtos Problemáticos")
@@ -284,7 +284,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     fig = go.Figure()
@@ -310,7 +310,7 @@ with col2:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -413,7 +413,7 @@ with col1:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### 📋 Priorização de Ações")

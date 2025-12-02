@@ -231,7 +231,7 @@ fig.update_layout(
     margin=dict(l=20, r=20, t=20, b=20)
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -338,7 +338,7 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
-    if st.button("🎯 VER PLANO DE AÇÃO COMPLETO", use_container_width=True, type="primary"):
+    if st.button("🎯 VER PLANO DE AÇÃO COMPLETO", width='stretch', type="primary"):
         st.switch_page("pages/9_🎯_Plano_de_Ação.py")
 
 st.markdown("<br>", unsafe_allow_html=True)

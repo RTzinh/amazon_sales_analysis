@@ -108,7 +108,7 @@ with col1:
         height=350
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### 🔍 Análise de Perdas")
@@ -168,7 +168,7 @@ with col1:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### 🏆 Destaques")
@@ -202,7 +202,7 @@ st.dataframe(
                          'Margem_Liquida': 'R$ {:,.2f}',
                          'Margem_%': '{:.1f}%'
                      }),
-    use_container_width=True,
+    width='stretch',
     height=400
 )
 
@@ -250,7 +250,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     fig = go.Figure()
@@ -278,7 +278,7 @@ with col2:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -326,7 +326,7 @@ with col1:
         height=450
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.dataframe(
@@ -336,7 +336,7 @@ with col2:
             'Clientes': '{:,.0f}',
             'Ticket_Medio': 'R$ {:,.2f}'
         }),
-        use_container_width=True,
+        width='stretch',
         height=450
     )
 

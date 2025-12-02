@@ -165,7 +165,7 @@ with col1:
     daily_revenue.columns = ['Date', 'Revenue']
     
     fig = create_timeline_chart(daily_revenue, 'Date', 'Revenue', 'Receita Diária')
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("### 📊 Status dos Pedidos")
@@ -176,7 +176,7 @@ with col2:
         status_counts.index,
         ''
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -213,7 +213,7 @@ with col1:
         yaxis={'showgrid': False}
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("### 💳 Métodos de Pagamento")
@@ -238,7 +238,7 @@ with col2:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -280,5 +280,5 @@ with col3:
 with st.expander("📋 Ver Resumo dos Dados"):
     st.dataframe(
         df_filtered.describe(),
-        use_container_width=True
+        width='stretch'
     )

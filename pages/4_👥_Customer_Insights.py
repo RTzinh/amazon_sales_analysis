@@ -80,7 +80,7 @@ with col1:
         showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### 📋 Segmentos")
@@ -128,7 +128,7 @@ with col1:
         height=450
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     # Frequency vs Monetary
@@ -151,7 +151,7 @@ with col2:
         height=450
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
@@ -176,7 +176,7 @@ with col1:
         'Clusters de Clientes (3D)'
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     st.markdown("#### 📊 Perfil dos Clusters")
@@ -191,7 +191,7 @@ with col2:
             'Pedidos Médios': '{:.1f}',
             'Ticket Médio': '${:,.2f}'
         }),
-        use_container_width=True
+        width='stretch'
     )
     
     for cluster_id, cluster_name in cluster_map.items():
@@ -226,7 +226,7 @@ with col1:
         height=400
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with col2:
     high_risk_customers = rfm_with_churn[rfm_with_churn['Churn_Risk'] == 'High Risk']
@@ -273,7 +273,7 @@ st.dataframe(
                            'Pedidos': '{:,.0f}',
                            'Itens Comprados': '{:,.0f}'
                        }),
-    use_container_width=True,
+    width='stretch',
     height=500
 )
 

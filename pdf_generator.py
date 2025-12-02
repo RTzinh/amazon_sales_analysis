@@ -173,6 +173,6 @@ def create_pdf_download_button(pdf_data, filename, button_text="📥 Baixar Rela
             data=pdf_data,
             file_name=filename,
             mime="application/pdf",
-            use_container_width=True,
+            width='stretch',
             type="secondary"
         )
