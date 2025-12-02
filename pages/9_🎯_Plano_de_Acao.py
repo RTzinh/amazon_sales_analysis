@@ -378,7 +378,8 @@ st.success(f"🎯 **ROI Projetado no Trimestre: {roi_data.iloc[3]['ROI_%']:.1f}%
 st.markdown("---")
 
 # PDF Export Button
-st.markdown("### 📄 Exportar Relatório")
+st.markdown("### Exportar Relatorio")
+st.markdown("Gere um PDF executivo com KPIs, quick wins e metas do plano.")
 
 margin_pct = (df['Net_Revenue'].sum() / total_revenue) * 100
 roi_projected = ((total_opportunity * 0.7) / 33000) * 100
@@ -386,7 +387,7 @@ roi_projected = ((total_opportunity * 0.7) / 33000) * 100
 pdf_metrics = {
     'delivered_revenue': delivered_revenue,
     'avg_order_value': metrics['avg_order_value'],
-    'conversion_rate': current_conversion,  # Fixed: using current_conversion which is already defined
+    'conversion_rate': current_conversion,
     'margin_pct': margin_pct,
     'lost_revenue': lost_revenue,
     'roi_projected': roi_projected
@@ -394,27 +395,26 @@ pdf_metrics = {
 
 quick_wins_data = [
     {
-        'title': 'Aumentar Conversão',
-        'description': 'Implementar follow-up em 24h, confirmar pedidos pendentes, reduzir conversão de {:.1f}% para 77%'.format(current_conversion),
+        'title': 'Aumentar Conversao',
+        'description': 'Implementar follow-up em 24h, confirmar pedidos pendentes, reduzir conversao de {:.1f}% para 77%'.format(current_conversion),
         'gain': opportunity_conversion * 0.3
     },
     {
         'title': 'Otimizar Margem',
-        'description': 'Revisar política de desconto, treinar equipe em valor, aumentar margem em +2%',
+        'description': 'Revisar politica de desconto, treinar equipe em valor, aumentar margem em +2%',
         'gain': opportunity_margin * 0.4
     },
     {
         'title': 'Reduzir Perdas',
-        'description': 'Investigar cancelamentos, melhorar processo pós-venda, reduzir perdas em -20%',
+        'description': 'Investigar cancelamentos, melhorar processo pos-venda, reduzir perdas em -20%',
         'gain': opportunity_retention * 0.5
     }
 ]
 
-try:
-    pdf_data = generate_executive_summary_pdf(pdf_metrics, quick_wins_data)
-    create_pdf_download_button(pdf_data, "plano_acao_comercial.pdf", "📥 Baixar Plano de Ação em PDF")
-except Exception as e:
-    st.info("💡 A funcionalidade de PDF está disponível. Pressione o botão acima para baixar.")
+if st.button("Gerar Relatorio PDF", type="primary", use_container_width=True):
+    with st.spinner("Gerando relatorio em PDF..."):
+        pdf_data = generate_executive_summary_pdf(pdf_metrics, quick_wins_data)
+    create_pdf_download_button(pdf_data, "plano_acao_comercial.pdf", "Baixar Plano de Acao em PDF")
 
 st.markdown("---")
 
@@ -423,12 +423,11 @@ st.markdown("### 🎯 Recomendações Finais")
 
 display_insight_box(
     "Foco Executivo",
-    """A análise revela **R$ {:.2f}** em oportunidades imediatas. Priorizar:
-    1. **Conversão** (maior impacto, fácil implementação)
-    2. **Margem** (resultado direto no lucro)
-    3. **Equipe** (sustentabilidade de longo prazo)
-    
-    Executar com disciplina, mensurar semanalmente, ajustar rapidamente.""".format(total_opportunity),
+    """🚀 A análise revela <strong style="color:#8B5CF6;">R$ {:.2f}</strong> em oportunidades imediatas.<br>
+    1. ✅ <strong style="color:#38BDF8;">Conversão</strong> — maior impacto, fácil implementação<br>
+    2. 💰 <strong style="color:#22C55E;">Margem</strong> — resultado direto no lucro<br>
+    3. 🤝 <strong style="color:#FBBF24;">Equipe</strong> — sustentabilidade de longo prazo<br><br>
+    🧭 <strong>Execute com disciplina, mensure semanalmente, ajuste rapidamente.</strong>""".format(total_opportunity),
     "🎯"
 )
 

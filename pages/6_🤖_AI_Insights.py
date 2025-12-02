@@ -13,6 +13,15 @@ from ai_models import (
 from utils import apply_custom_css, display_insight_box
 import pandas as pd
 
+def _load_gemini_key_from_secrets():
+    """Return GEMINI_API_KEY from .streamlit/secrets.toml if available."""
+    try:
+        if "GEMINI_API_KEY" in st.secrets:
+            return st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        return None
+    return None
+
 st.set_page_config(page_title="AI Insights", page_icon="🤖", layout="wide")
 apply_custom_css()
 
@@ -22,11 +31,17 @@ st.markdown("Análises avançadas com Google Gemini AI e LangChain")
 # API Key configuration
 st.sidebar.header("⚙️ Configuração")
 
+secret_api_key = _load_gemini_key_from_secrets()
+
 api_key = st.sidebar.text_input(
     "Google Gemini API Key",
+    value=secret_api_key or "",
     type="password",
     help="Obtenha sua chave em https://makersuite.google.com/app/apikey"
 )
+
+if secret_api_key:
+    st.sidebar.info("Chave carregada de .streamlit/secrets.toml ou dos Secrets do Streamlit Cloud.")
 
 if not api_key:
     st.warning("⚠️ Por favor, insira sua chave da API do Google Gemini na barra lateral para usar os recursos de IA.")

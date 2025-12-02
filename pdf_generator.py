@@ -5,6 +5,8 @@ import pandas as pd
 class ReportPDF(FPDF):
     def __init__(self):
         super().__init__()
+        self.set_margins(15, 15, 15)
+        self.set_auto_page_break(auto=True, margin=15)
         self.add_page()
         
     def header(self):
@@ -53,9 +55,9 @@ def generate_executive_summary_pdf(metrics, quick_wins):
     ]
     
     for label, value in kpis:
-        pdf.cell(95, 7, f'  {label}:', 0, 0)
+        pdf.cell(80, 7, f'  {label}:', 0, 0)
         pdf.set_font('Arial', 'B', 11)
-        pdf.cell(95, 7, value, 0, 1)
+        pdf.cell(100, 7, value, 0, 1)
         pdf.set_font('Arial', '', 11)
     
     pdf.ln(5)
@@ -68,20 +70,24 @@ def generate_executive_summary_pdf(metrics, quick_wins):
     
     pdf.set_font('Arial', '', 10)
     pdf.set_text_color(51, 65, 85)
+    available_width = pdf.w - pdf.l_margin - pdf.r_margin
     
     for i, win in enumerate(quick_wins, 1):
         pdf.set_font('Arial', 'B', 11)
         pdf.set_text_color(139, 92, 246)
-        pdf.cell(0, 7, f'Quick Win #{i}: {win["title"]}', 0, 1)
+        pdf.set_x(pdf.l_margin)
+        pdf.multi_cell(available_width, 7, f'Quick Win #{i}: {win["title"]}')
         
         pdf.set_font('Arial', '', 10)
         pdf.set_text_color(51, 65, 85)
-        pdf.multi_cell(0, 5, f'  {win["description"]}')
+        pdf.set_x(pdf.l_margin)
+        pdf.multi_cell(available_width, 5, f'- {win["description"]}')
         
         pdf.set_font('Arial', 'B', 10)
         pdf.set_text_color(16, 185, 129)
-        pdf.cell(0, 6, f'  Ganho Estimado: R$ {win["gain"]:,.2f}', 0, 1)
-        pdf.ln(2)
+        pdf.set_x(pdf.l_margin)
+        pdf.multi_cell(available_width, 6, f'Ganho Estimado: R$ {win["gain"]:,.2f}')
+        pdf.ln(4)
     
     pdf.ln(5)
     
@@ -91,7 +97,13 @@ def generate_executive_summary_pdf(metrics, quick_wins):
     pdf.multi_cell(0, 5, 'Este relatorio foi gerado automaticamente com base na analise de 100.000 transacoes. '
                          'Para detalhes completos, acesse os dashboards interativos.')
     
-    return pdf.output(dest='S').encode('latin-1')
+    # FPDF2 output can be str/bytes/bytearray depending on version/config.
+    data = pdf.output(dest='S')
+    if isinstance(data, bytes):
+        return data
+    if isinstance(data, bytearray):
+        return bytes(data)
+    return str(data).encode('latin-1', errors='replace')
 
 def generate_performance_pdf(seller_data, metrics):
     """Generate performance report PDF"""
@@ -143,7 +155,12 @@ def generate_performance_pdf(seller_data, metrics):
                          f"• Margem media: {seller_data['Margem_%'].mean():.1f}%\n"
                          f"• Gap de performance: {((seller_data.iloc[0]['Faturamento'] / seller_data['Faturamento'].mean() - 1) * 100):.1f}%")
     
-    return pdf.output(dest='S').encode('latin-1')
+    data = pdf.output(dest='S')
+    if isinstance(data, bytes):
+        return data
+    if isinstance(data, bytearray):
+        return bytes(data)
+    return str(data).encode('latin-1', errors='replace')
 
 def create_pdf_download_button(pdf_data, filename, button_text="📥 Baixar Relatório PDF"):
     """Create a styled download button for PDF"""

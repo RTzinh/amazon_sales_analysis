@@ -85,6 +85,15 @@ def apply_custom_css():
             border-radius: 10px;
             overflow: hidden;
         }
+
+        /* Emphasis text (markdown **) */
+        strong {
+            color: #C4B5FD;
+            font-weight: 800;
+            background: rgba(139, 92, 246, 0.12);
+            padding: 0 4px;
+            border-radius: 4px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
