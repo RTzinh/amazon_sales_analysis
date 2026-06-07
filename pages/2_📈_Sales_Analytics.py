@@ -30,8 +30,8 @@ aggregation_level = st.sidebar.selectbox(
     index=2
 )
 
-# Map to pandas frequency
-freq_map = {"Diário": "D", "Semanal": "W", "Mensal": "M"}
+# Map to pandas frequency (offset aliases updated for pandas 2.2+/3.0: "M" -> "ME")
+freq_map = {"Diário": "D", "Semanal": "W", "Mensal": "ME"}
 freq = freq_map[aggregation_level]
 
 # Get time series data
@@ -235,7 +235,7 @@ st.markdown("---")
 # Growth analysis
 st.markdown("### 📊 Análise de Crescimento")
 
-if freq == 'M':
+if freq == 'ME':
     # Calculate month-over-month growth
     ts_data['Growth'] = ts_data['Revenue'].pct_change() * 100
     ts_data['Growth_Color'] = ts_data['Growth'].apply(lambda x: '#10B981' if x >= 0 else '#EF4444')

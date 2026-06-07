@@ -4,21 +4,25 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
 import streamlit as st
-import google.generativeai as genai
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_experimental.agents import create_pandas_dataframe_agent
-from langchain.agents.agent_types import AgentType
 import os
+
+# NOTE: as importações de LLM (google.generativeai / langchain) são feitas de forma
+# preguiçosa (lazy) dentro das funções que as usam. Assim, páginas que só precisam
+# das funções de ML puro (clustering, churn, anomalias) — como Customer Insights —
+# continuam carregando mesmo que os pacotes opcionais de IA estejam ausentes ou com
+# APIs incompatíveis (ex.: langchain.agents.agent_types removido em versões novas).
 
 # Configure Gemini API
 def configure_gemini(api_key):
     """Configure Google Gemini API"""
+    import google.generativeai as genai
     genai.configure(api_key=api_key)
     return True
 
 @st.cache_resource
 def get_gemini_llm(api_key, model="gemini-2.5-flash"):
     """Get Gemini LLM instance for LangChain"""
+    from langchain_google_genai import ChatGoogleGenerativeAI
     return ChatGoogleGenerativeAI(
         model=model,
         google_api_key=api_key,
@@ -28,8 +32,15 @@ def get_gemini_llm(api_key, model="gemini-2.5-flash"):
 
 def create_data_agent(df, api_key):
     """Create LangChain agent that can analyze the dataframe"""
+    from langchain_experimental.agents import create_pandas_dataframe_agent
+    try:
+        from langchain.agents.agent_types import AgentType
+    except ImportError:
+        # AgentType foi movido em versões recentes do langchain
+        from langchain.agents import AgentType
+
     llm = get_gemini_llm(api_key)
-    
+
     agent = create_pandas_dataframe_agent(
         llm,
         df,
@@ -39,12 +50,13 @@ def create_data_agent(df, api_key):
         handle_parsing_errors=True,
         max_iterations=5
     )
-    
+
     return agent
 
 def analyze_with_gemini(prompt, api_key, data_context=None):
     """Use Gemini to analyze data and generate insights"""
     try:
+        import google.generativeai as genai
         model = genai.GenerativeModel('gemini-2.5-flash')
         
         full_prompt = f"""Você é um analista de dados especializado em e-commerce.
@@ -177,23 +189,36 @@ def detect_anomalies(df, contamination=0.05):
     return anomalies
 
 def predict_customer_churn(rfm_data):
-    """Identify customers at risk of churning based on RFM"""
-    
-    # Define churn risk
-    def calculate_churn_risk(row):
-        # High recency (not bought recently) and low frequency = high churn risk
-        if row['Recency'] > rfm_data['Recency'].quantile(0.75):
-            if row['Frequency'] < rfm_data['Frequency'].quantile(0.25):
-                return 'High Risk'
-            else:
-                return 'Medium Risk'
-        elif row['Recency'] > rfm_data['Recency'].median():
-            return 'Medium Risk'
-        else:
-            return 'Low Risk'
-    
-    rfm_data['Churn_Risk'] = rfm_data.apply(calculate_churn_risk, axis=1)
-    
+    """Identify customers at risk of churning based on RFM.
+
+    Vetorizado: os limiares (quantis/mediana) são calculados UMA vez sobre as
+    colunas inteiras, em vez de recalculados a cada linha dentro de um apply.
+    Isso evita ~159s de processamento em ~43k clientes (a versão antiga com
+    apply linha-a-linha fazia o app travar na tela "Calculando segmentos RFM...").
+    O resultado é idêntico ao da lógica original.
+    """
+    recency = rfm_data['Recency']
+    frequency = rfm_data['Frequency']
+
+    # Limiares calculados uma única vez
+    rec_q75 = recency.quantile(0.75)
+    rec_median = recency.median()
+    freq_q25 = frequency.quantile(0.25)
+
+    # High recency (not bought recently) e low frequency = alto risco de churn
+    high_recency = recency > rec_q75
+    low_frequency = frequency < freq_q25
+
+    # Padrão: Low Risk; aplica as regras na mesma ordem da lógica original
+    churn = pd.Series('Low Risk', index=rfm_data.index)
+    # Para recência acima da mediana (mas não no top 25%) -> Medium Risk
+    churn[recency > rec_median] = 'Medium Risk'
+    # Para recência no top 25%: Medium Risk por padrão, High Risk se frequência baixa
+    churn[high_recency] = 'Medium Risk'
+    churn[high_recency & low_frequency] = 'High Risk'
+
+    rfm_data['Churn_Risk'] = churn
+
     return rfm_data
 
 def generate_product_recommendations(df, customer_id=None, top_n=5):

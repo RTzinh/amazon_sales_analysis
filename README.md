@@ -25,6 +25,10 @@
 
 ![Geographic Analysis](assets/geographic-analysis.png)
 
+| Análise temporal de vendas | Segmentação de clientes (RFM) |
+|:---:|:---:|
+| ![Sales Analytics](assets/sales-analytics.png) | ![Customer Insights](assets/customer-insights.png) |
+
 ---
 
 ## 🎯 O problema que ele resolve
