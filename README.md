@@ -74,6 +74,7 @@ The sample dataset (`Amazon.csv`) ships with **100k transactions** — orders, c
 
 I build custom **BI dashboards**, **automation** and **applied AI** solutions for small and mid-sized businesses.
 
+**Ryan Tereciani**
+
 - 🐙 GitHub: [github.com/RTzinh](https://github.com/RTzinh)
-- 📩 Email: _your-email-here_
-- 💼 LinkedIn: _your-linkedin-here_
+- 📩 Email: [rtereciani5@gmail.com](mailto:rtereciani5@gmail.com)
