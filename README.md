@@ -2,7 +2,9 @@
 
 > Turn your sales spreadsheet into a decision-making cockpit: **KPIs, interactive charts and AI-generated action plans** — in seconds, right in the browser, nothing to install.
 
-🔗 **Live demo:** _deploying on Streamlit Cloud — link coming soon_
+[![Live Demo](https://img.shields.io/badge/▶_Live_Demo-Open_App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://amazonsalesanalysis-dhpqhakxwxwwh3o2tt3q4v.streamlit.app/)
+
+> 💤 Free Streamlit Cloud app — it may take a few seconds to wake up on first visit.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)
