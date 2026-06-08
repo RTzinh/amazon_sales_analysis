@@ -9,26 +9,26 @@ st.set_page_config(page_title="Overview Dashboard", page_icon="📊", layout="wi
 apply_custom_css()
 
 st.title("📊 Overview Dashboard")
-st.markdown("Visão geral dos principais indicadores de desempenho")
+st.markdown("High-level view of the main performance indicators")
 
 # Load and process data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados. Verifique se o arquivo Amazon.csv está presente.")
+        st.error("Error loading data. Make sure the Amazon.csv file is present.")
         st.stop()
     
     df = preprocess_data(df_raw)
 
 # Sidebar filters
-st.sidebar.header("🎛️ Filtros")
+st.sidebar.header("🎛️ Filters")
 
 # Date range filter
 min_date = df['OrderDate'].min().date()
 max_date = df['OrderDate'].max().date()
 
 date_range = st.sidebar.date_input(
-    "Período",
+    "Period",
     value=(min_date, max_date),
     min_value=min_date,
     max_value=max_date
@@ -42,21 +42,21 @@ else:
 
 # Category filter
 categories = st.sidebar.multiselect(
-    "Categorias",
+    "Categories",
     options=df['Category'].unique(),
     default=df['Category'].unique()
 )
 
 # Country filter
 countries = st.sidebar.multiselect(
-    "Países",
+    "Countries",
     options=df['Country'].unique(),
     default=df['Country'].unique()
 )
 
 # Order status filter
 statuses = st.sidebar.multiselect(
-    "Status do Pedido",
+    "Order Status",
     options=df['OrderStatus'].unique(),
     default=df['OrderStatus'].unique()
 )
@@ -68,14 +68,14 @@ df_filtered = filter_data(df, date_filter, categories, countries, statuses)
 metrics = get_summary_metrics(df_filtered)
 
 # Display key metrics
-st.markdown("### 💰 Principais Métricas")
+st.markdown("### 💰 Key Metrics")
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.markdown(
         create_metric_card(
-            "Receita Total",
+            "Total Revenue",
             metrics['total_revenue'],
             delta=None,
             prefix="$"
@@ -86,7 +86,7 @@ with col1:
 with col2:
     st.markdown(
         create_metric_card(
-            "Total de Pedidos",
+            "Total Orders",
             metrics['total_orders'],
             delta=None
         ),
@@ -96,7 +96,7 @@ with col2:
 with col3:
     st.markdown(
         create_metric_card(
-            "Ticket Médio",
+            "Average Order Value",
             metrics['avg_order_value'],
             delta=None,
             prefix="$"
@@ -107,7 +107,7 @@ with col3:
 with col4:
     st.markdown(
         create_metric_card(
-            "Taxa de Conversão",
+            "Conversion Rate",
             metrics['conversion_rate'],
             delta=None,
             suffix="%"
@@ -122,34 +122,34 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.metric(
-        "👥 Clientes Únicos",
+        "👥 Unique Customers",
         f"{metrics['total_customers']:,}",
-        help="Número total de clientes únicos"
+        help="Total number of unique customers"
     )
 
 with col2:
     st.metric(
-        "📦 Produtos Únicos",
+        "📦 Unique Products",
         f"{metrics['total_products']:,}",
-        help="Número total de produtos vendidos"
+        help="Total number of products sold"
     )
 
 with col3:
     st.metric(
-        "🚫 Taxa de Cancelamento",
+        "🚫 Cancellation Rate",
         f"{metrics['cancellation_rate']:.1f}%",
         delta=f"-{metrics['cancellation_rate']:.1f}%",
         delta_color="inverse",
-        help="Porcentagem de pedidos cancelados"
+        help="Percentage of cancelled orders"
     )
 
 with col4:
     st.metric(
-        "↩️ Taxa de Retorno",
+        "↩️ Return Rate",
         f"{metrics['return_rate']:.1f}%",
         delta=f"-{metrics['return_rate']:.1f}%",
         delta_color="inverse",
-        help="Porcentagem de pedidos retornados"
+        help="Percentage of returned orders"
     )
 
 st.markdown("---")
@@ -158,17 +158,17 @@ st.markdown("---")
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.markdown("### 📈 Tendência de Vendas")
-    
+    st.markdown("### 📈 Sales Trend")
+
     # Daily revenue trend
     daily_revenue = df_filtered.groupby(df_filtered['OrderDate'].dt.date)['TotalAmount'].sum().reset_index()
     daily_revenue.columns = ['Date', 'Revenue']
-    
-    fig = create_timeline_chart(daily_revenue, 'Date', 'Revenue', 'Receita Diária')
+
+    fig = create_timeline_chart(daily_revenue, 'Date', 'Revenue', 'Daily Revenue')
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("### 📊 Status dos Pedidos")
+    st.markdown("### 📊 Order Status")
     
     status_counts = df_filtered['OrderStatus'].value_counts()
     fig = create_pie_chart(
@@ -184,7 +184,7 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### 🛍️ Receita por Categoria")
+    st.markdown("### 🛍️ Revenue by Category")
     
     category_revenue = df_filtered.groupby('Category')['TotalAmount'].sum().sort_values(ascending=True)
     
@@ -203,7 +203,7 @@ with col1:
     
     fig.update_layout(
         title='',
-        xaxis_title='Receita ($)',
+        xaxis_title='Revenue ($)',
         yaxis_title='',
         height=400,
         plot_bgcolor='rgba(0,0,0,0)',
@@ -212,11 +212,11 @@ with col1:
         xaxis={'showgrid': True, 'gridcolor': 'rgba(148, 163, 184, 0.1)'},
         yaxis={'showgrid': False}
     )
-    
+
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("### 💳 Métodos de Pagamento")
+    st.markdown("### 💳 Payment Methods")
     
     payment_counts = df_filtered['PaymentMethod'].value_counts()
     
@@ -243,7 +243,7 @@ with col2:
 st.markdown("---")
 
 # Quick Insights
-st.markdown("### 💡 Insights Rápidos")
+st.markdown("### 💡 Quick Insights")
 
 col1, col2, col3 = st.columns(3)
 
@@ -252,8 +252,8 @@ with col1:
     top_category_revenue = df_filtered.groupby('Category')['TotalAmount'].sum().max()
     
     display_insight_box(
-        "Categoria Líder",
-        f"{top_category} é a categoria mais lucrativa com {format_currency(top_category_revenue)} em vendas.",
+        "Leading Category",
+        f"{top_category} is the most profitable category with {format_currency(top_category_revenue)} in sales.",
         "🏆"
     )
 
@@ -262,8 +262,8 @@ with col2:
     country_pct = (df_filtered[df_filtered['Country'] == top_country]['TotalAmount'].sum() / metrics['total_revenue']) * 100
     
     display_insight_box(
-        "Mercado Principal",
-        f"{top_country} representa {country_pct:.1f}% da receita total.",
+        "Main Market",
+        f"{top_country} accounts for {country_pct:.1f}% of total revenue.",
         "🌍"
     )
 
@@ -271,13 +271,13 @@ with col3:
     avg_items = df_filtered['Quantity'].mean()
     
     display_insight_box(
-        "Comportamento de Compra",
-        f"Em média, clientes compram {avg_items:.1f} itens por pedido.",
+        "Purchase Behavior",
+        f"On average, customers buy {avg_items:.1f} items per order.",
         "🛒"
     )
 
 # Data summary
-with st.expander("📋 Ver Resumo dos Dados"):
+with st.expander("📋 View Data Summary"):
     st.dataframe(
         df_filtered.describe(),
         width='stretch'

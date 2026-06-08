@@ -7,17 +7,17 @@ from utils import apply_custom_css, display_insight_box
 import pandas as pd
 import numpy as np
 
-st.set_page_config(page_title="Performance Comercial", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Commercial Performance", page_icon="📈", layout="wide")
 apply_custom_css()
 
-st.title("📈 Performance Comercial")
-st.markdown("**Análise de KPIs Essenciais para Gestão Comercial**")
+st.title("📈 Commercial Performance")
+st.markdown("**Analysis of Essential KPIs for Sales Management**")
 
 # Load data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados.")
+        st.error("Error loading data.")
         st.stop()
     df = preprocess_data(df_raw)
 
@@ -34,57 +34,57 @@ total_shipping = df['ShippingCost'].sum()
 shipping_impact = (total_shipping / total_revenue) * 100
 
 # Header metrics
-st.markdown("### 💰 Indicadores de Performance")
+st.markdown("### 💰 Performance Indicators")
 
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     st.metric(
-        "Faturamento Real",
+        "Actual Revenue",
         f"R$ {delivered_revenue:,.2f}",
-        delta=f"{metrics['conversion_rate']:.1f}% converte",
-        help="Receita de pedidos entregues (excluindo cancelamentos)"
+        delta=f"{metrics['conversion_rate']:.1f}% converts",
+        help="Revenue from delivered orders (excluding cancellations)"
     )
 
 with col2:
     st.metric(
-        "Ticket Médio",
+        "Average Order Value",
         f"R$ {metrics['avg_order_value']:.2f}",
-        help="Valor médio por pedido"
+        help="Average value per order"
     )
 
 with col3:
     st.metric(
-        "Margem Comercial",
+        "Commercial Margin",
         f"{gross_margin_pct:.1f}%",
-        help="Margem líquida após impostos e frete"
+        help="Net margin after taxes and shipping"
     )
 
 with col4:
     st.metric(
-        "Perdas Comerciais",
+        "Commercial Losses",
         f"R$ {lost_revenue:,.2f}",
         delta=f"-{(lost_revenue/total_revenue)*100:.1f}%",
         delta_color="inverse",
-        help="Receita perdida por cancelamentos e devoluções"
+        help="Revenue lost to cancellations and returns"
     )
 
 with col5:
     st.metric(
-        "Desconto Médio",
+        "Average Discount",
         f"{avg_discount:.1f}%",
-        help="Desconto médio aplicado nas vendas"
+        help="Average discount applied on sales"
     )
 
 st.markdown("---")
 
-# Funnel de conversão
-st.markdown("### 🎯 Funil de Conversão Comercial")
+# Conversion funnel
+st.markdown("### 🎯 Commercial Conversion Funnel")
 
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    stages = ['Pedidos Totais', 'Enviados', 'Entregues']
+    stages = ['Total Orders', 'Shipped', 'Delivered']
     values = [
         metrics['total_orders'],
         metrics['total_orders'] - df[df['OrderStatus'] == 'Pending'].shape[0],
@@ -101,7 +101,7 @@ with col1:
     ))
     
     fig.update_layout(
-        title='Pipeline de Pedidos',
+        title='Order Pipeline',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -111,23 +111,23 @@ with col1:
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("#### 🔍 Análise de Perdas")
-    
+    st.markdown("#### 🔍 Loss Analysis")
+
     cancelled_rate = (metrics['cancelled_orders'] / metrics['total_orders']) * 100
     return_rate = metrics['return_rate']
-    
-    st.metric("Taxa de Cancelamento", f"{cancelled_rate:.2f}%", delta=f"-{cancelled_rate:.2f}%", delta_color="inverse")
-    st.metric("Taxa de Devolução", f"{return_rate:.2f}%", delta=f"-{return_rate:.2f}%", delta_color="inverse")
-    
+
+    st.metric("Cancellation Rate", f"{cancelled_rate:.2f}%", delta=f"-{cancelled_rate:.2f}%", delta_color="inverse")
+    st.metric("Return Rate", f"{return_rate:.2f}%", delta=f"-{return_rate:.2f}%", delta_color="inverse")
+
     total_loss_rate = cancelled_rate + return_rate
-    st.metric("Perda Total no Funil", f"{total_loss_rate:.2f}%", delta=f"-{total_loss_rate:.2f}%", delta_color="inverse")
-    
-    st.info(f"💡 **Quick Win**: Reduzir cancelamentos em 1% = R$ {(delivered_revenue * 0.01):,.2f}")
+    st.metric("Total Funnel Loss", f"{total_loss_rate:.2f}%", delta=f"-{total_loss_rate:.2f}%", delta_color="inverse")
+
+    st.info(f"💡 **Quick Win**: Reducing cancellations by 1% = R$ {(delivered_revenue * 0.01):,.2f}")
 
 st.markdown("---")
 
-# Performance por Vendedor
-st.markdown("### 👥 Performance por Vendedor (Top 20)")
+# Performance by Seller
+st.markdown("### 👥 Performance by Seller (Top 20)")
 
 seller_perf = df[df['OrderStatus'] == 'Delivered'].groupby('SellerID').agg({
     'TotalAmount': ['sum', 'mean', 'count'],
@@ -136,29 +136,29 @@ seller_perf = df[df['OrderStatus'] == 'Delivered'].groupby('SellerID').agg({
     'Net_Revenue': 'sum'
 }).round(2)
 
-seller_perf.columns = ['Faturamento', 'Ticket_Medio', 'Vendas', 'Itens', 'Desc_Medio', 'Margem_Liquida']
-seller_perf['Margem_%'] = (seller_perf['Margem_Liquida'] / seller_perf['Faturamento'] * 100).round(1)
-seller_perf = seller_perf.sort_values('Faturamento', ascending=False).head(20)
+seller_perf.columns = ['Revenue', 'Avg_Order_Value', 'Sales', 'Items', 'Avg_Discount', 'Net_Margin']
+seller_perf['Margin_%'] = (seller_perf['Net_Margin'] / seller_perf['Revenue'] * 100).round(1)
+seller_perf = seller_perf.sort_values('Revenue', ascending=False).head(20)
 
 col1, col2 = st.columns([3, 1])
 
 with col1:
     fig = go.Figure()
-    
+
     fig.add_trace(go.Bar(
         x=seller_perf.index,
-        y=seller_perf['Faturamento'],
-        name='Faturamento',
+        y=seller_perf['Revenue'],
+        name='Revenue',
         marker_color='#8B5CF6',
-        text=seller_perf['Faturamento'].apply(lambda x: f'R$ {x:,.0f}'),
+        text=seller_perf['Revenue'].apply(lambda x: f'R$ {x:,.0f}'),
         textposition='outside',
-        hovertemplate='<b>%{x}</b><br>Faturamento: R$ %{y:,.2f}<extra></extra>'
+        hovertemplate='<b>%{x}</b><br>Revenue: R$ %{y:,.2f}<extra></extra>'
     ))
-    
+
     fig.update_layout(
-        title='Ranking de Faturamento por Vendedor',
-        xaxis_title='Vendedor',
-        yaxis_title='Faturamento (R$)',
+        title='Revenue Ranking by Seller',
+        xaxis_title='Seller',
+        yaxis_title='Revenue (R$)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -171,36 +171,36 @@ with col1:
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("#### 🏆 Destaques")
-    
+    st.markdown("#### 🏆 Highlights")
+
     best_seller = seller_perf.index[0]
-    best_revenue = seller_perf.iloc[0]['Faturamento']
-    
-    st.metric("Top Vendedor", best_seller, f"R$ {best_revenue:,.0f}")
-    
-    best_ticket = seller_perf['Ticket_Medio'].idxmax()
-    ticket_value = seller_perf.loc[best_ticket, 'Ticket_Medio']
-    
-    st.metric("Maior Ticket Médio", best_ticket, f"R$ {ticket_value:,.2f}")
-    
-    best_margin = seller_perf['Margem_%'].idxmax()
-    margin_value = seller_perf.loc[best_margin, 'Margem_%']
-    
-    st.metric("Melhor Margem", best_margin, f"{margin_value:.1f}%")
+    best_revenue = seller_perf.iloc[0]['Revenue']
+
+    st.metric("Top Seller", best_seller, f"R$ {best_revenue:,.0f}")
+
+    best_ticket = seller_perf['Avg_Order_Value'].idxmax()
+    ticket_value = seller_perf.loc[best_ticket, 'Avg_Order_Value']
+
+    st.metric("Highest Average Order Value", best_ticket, f"R$ {ticket_value:,.2f}")
+
+    best_margin = seller_perf['Margin_%'].idxmax()
+    margin_value = seller_perf.loc[best_margin, 'Margin_%']
+
+    st.metric("Best Margin", best_margin, f"{margin_value:.1f}%")
 
 # Detailed seller table
-st.markdown("#### 📊 Tabela Detalhada de Performance")
+st.markdown("#### 📊 Detailed Performance Table")
 
 st.dataframe(
-    seller_perf.style.background_gradient(cmap='Purples', subset=['Faturamento', 'Margem_Liquida'])
+    seller_perf.style.background_gradient(cmap='Purples', subset=['Revenue', 'Net_Margin'])
                      .format({
-                         'Faturamento': 'R$ {:,.2f}',
-                         'Ticket_Medio': 'R$ {:,.2f}',
-                         'Vendas': '{:,.0f}',
-                         'Itens': '{:,.0f}',
-                         'Desc_Medio': '{:.1%}',
-                         'Margem_Liquida': 'R$ {:,.2f}',
-                         'Margem_%': '{:.1f}%'
+                         'Revenue': 'R$ {:,.2f}',
+                         'Avg_Order_Value': 'R$ {:,.2f}',
+                         'Sales': '{:,.0f}',
+                         'Items': '{:,.0f}',
+                         'Avg_Discount': '{:.1%}',
+                         'Net_Margin': 'R$ {:,.2f}',
+                         'Margin_%': '{:.1f}%'
                      }),
     width='stretch',
     height=400
@@ -208,8 +208,8 @@ st.dataframe(
 
 st.markdown("---")
 
-# Análise de Desconto vs Margem
-st.markdown("### 💸 Impacto do Desconto no Resultado Comercial")
+# Discount vs Margin analysis
+st.markdown("### 💸 Discount Impact on Commercial Results")
 
 col1, col2 = st.columns(2)
 
@@ -224,24 +224,24 @@ with col1:
         'Net_Revenue': 'sum'
     }).round(2)
     
-    discount_analysis.columns = ['Faturamento', 'Ticket_Medio', 'Vendas', 'Margem']
-    discount_analysis['Margem_%'] = (discount_analysis['Margem'] / discount_analysis['Faturamento'] * 100).round(1)
-    
+    discount_analysis.columns = ['Revenue', 'Avg_Order_Value', 'Sales', 'Margin']
+    discount_analysis['Margin_%'] = (discount_analysis['Margin'] / discount_analysis['Revenue'] * 100).round(1)
+
     fig = go.Figure()
-    
+
     fig.add_trace(go.Bar(
         x=discount_analysis.index.astype(str),
-        y=discount_analysis['Faturamento'],
-        name='Faturamento',
+        y=discount_analysis['Revenue'],
+        name='Revenue',
         marker_color='#8B5CF6',
-        text=discount_analysis['Faturamento'].apply(lambda x: f'R$ {x:,.0f}'),
+        text=discount_analysis['Revenue'].apply(lambda x: f'R$ {x:,.0f}'),
         textposition='outside'
     ))
-    
+
     fig.update_layout(
-        title='Faturamento por Faixa de Desconto',
-        xaxis_title='Faixa de Desconto',
-        yaxis_title='Faturamento (R$)',
+        title='Revenue by Discount Range',
+        xaxis_title='Discount Range',
+        yaxis_title='Revenue (R$)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -257,24 +257,24 @@ with col2:
     
     fig.add_trace(go.Scatter(
         x=discount_analysis.index.astype(str),
-        y=discount_analysis['Margem_%'],
+        y=discount_analysis['Margin_%'],
         mode='lines+markers',
-        name='Margem %',
+        name='Margin %',
         line=dict(color='#EF4444', width=3),
         marker=dict(size=12),
-        text=discount_analysis['Margem_%'].apply(lambda x: f'{x:.1f}%'),
+        text=discount_analysis['Margin_%'].apply(lambda x: f'{x:.1f}%'),
         textposition='top center'
     ))
-    
+
     fig.update_layout(
-        title='Margem (%) por Faixa de Desconto',
-        xaxis_title='Faixa de Desconto',
-        yaxis_title='Margem (%)',
+        title='Margin (%) by Discount Range',
+        xaxis_title='Discount Range',
+        yaxis_title='Margin (%)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
         xaxis={'showgrid': False},
-        yaxis={'showgrid': True, 'gridcolor': 'rgba(148, 163, 184, 0.1)', 'range': [0, max(discount_analysis['Margem_%']) * 1.2]},
+        yaxis={'showgrid': True, 'gridcolor': 'rgba(148, 163, 184, 0.1)', 'range': [0, max(discount_analysis['Margin_%']) * 1.2]},
         height=400
     )
     
@@ -283,7 +283,7 @@ with col2:
 st.markdown("---")
 
 # Regional Performance
-st.markdown("### 🗺️ Performance Regional (Top 10 Estados)")
+st.markdown("### 🗺️ Regional Performance (Top 10 States)")
 
 state_perf = df[df['OrderStatus'] == 'Delivered'].groupby('State').agg({
     'TotalAmount': 'sum',
@@ -291,32 +291,32 @@ state_perf = df[df['OrderStatus'] == 'Delivered'].groupby('State').agg({
     'CustomerID': 'nunique'
 }).round(2)
 
-state_perf.columns = ['Faturamento', 'Vendas', 'Clientes']
-state_perf['Ticket_Medio'] = (state_perf['Faturamento'] / state_perf['Vendas']).round(2)
-state_perf = state_perf.sort_values('Faturamento', ascending=False).head(10)
+state_perf.columns = ['Revenue', 'Sales', 'Customers']
+state_perf['Avg_Order_Value'] = (state_perf['Revenue'] / state_perf['Sales']).round(2)
+state_perf = state_perf.sort_values('Revenue', ascending=False).head(10)
 
 col1, col2 = st.columns([2, 1])
 
 with col1:
     fig = go.Figure()
-    
+
     fig.add_trace(go.Bar(
         y=state_perf.index[::-1],
-        x=state_perf['Faturamento'][::-1],
+        x=state_perf['Revenue'][::-1],
         orientation='h',
         marker=dict(
-            color=state_perf['Faturamento'][::-1],
+            color=state_perf['Revenue'][::-1],
             colorscale='Viridis',
             showscale=False
         ),
-        text=state_perf['Faturamento'][::-1].apply(lambda x: f'R$ {x:,.0f}'),
+        text=state_perf['Revenue'][::-1].apply(lambda x: f'R$ {x:,.0f}'),
         textposition='outside',
-        hovertemplate='<b>%{y}</b><br>Faturamento: R$ %{x:,.2f}<extra></extra>'
+        hovertemplate='<b>%{y}</b><br>Revenue: R$ %{x:,.2f}<extra></extra>'
     ))
-    
+
     fig.update_layout(
-        title='Top 10 Estados por Faturamento',
-        xaxis_title='Faturamento (R$)',
+        title='Top 10 States by Revenue',
+        xaxis_title='Revenue (R$)',
         yaxis_title='',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -331,10 +331,10 @@ with col1:
 with col2:
     st.dataframe(
         state_perf.style.format({
-            'Faturamento': 'R$ {:,.2f}',
-            'Vendas': '{:,.0f}',
-            'Clientes': '{:,.0f}',
-            'Ticket_Medio': 'R$ {:,.2f}'
+            'Revenue': 'R$ {:,.2f}',
+            'Sales': '{:,.0f}',
+            'Customers': '{:,.0f}',
+            'Avg_Order_Value': 'R$ {:,.2f}'
         }),
         width='stretch',
         height=450
@@ -343,7 +343,7 @@ with col2:
 st.markdown("---")
 
 # Insights Comerciais
-st.markdown("### 💡 Insights Comerciais Estratégicos")
+st.markdown("### 💡 Strategic Commercial Insights")
 
 col1, col2, col3 = st.columns(3)
 
@@ -352,32 +352,32 @@ with col1:
     current_conversion = metrics['conversion_rate']
     target_conversion = 80.0
     revenue_opportunity = (delivered_revenue / current_conversion) * (target_conversion - current_conversion)
-    
+
     display_insight_box(
-        "Oportunidade de Conversão",
-        f"Aumentar conversão de {current_conversion:.1f}% para {target_conversion:.0f}% = **R$ {revenue_opportunity:,.2f}** adicionais.",
+        "Conversion Opportunity",
+        f"Raising conversion from {current_conversion:.1f}% to {target_conversion:.0f}% = **R$ {revenue_opportunity:,.2f}** in additional revenue.",
         "🎯"
     )
 
 with col2:
     # Best discount range
-    best_discount_range = discount_analysis['Margem_%'].idxmax()
-    best_margin = discount_analysis.loc[best_discount_range, 'Margem_%']
-    
+    best_discount_range = discount_analysis['Margin_%'].idxmax()
+    best_margin = discount_analysis.loc[best_discount_range, 'Margin_%']
+
     display_insight_box(
-        "Zona Ideal de Desconto",
-        f"Desconto na faixa **{best_discount_range}** mantém melhor margem ({best_margin:.1f}%). Orientar vendedores.",
+        "Ideal Discount Zone",
+        f"Discounts in the **{best_discount_range}** range keep the best margin ({best_margin:.1f}%). Guide your sellers.",
         "💰"
     )
 
 with col3:
     # Top performer insight
-    avg_seller_revenue = seller_perf['Faturamento'].mean()
-    top_seller_revenue = seller_perf.iloc[0]['Faturamento']
+    avg_seller_revenue = seller_perf['Revenue'].mean()
+    top_seller_revenue = seller_perf.iloc[0]['Revenue']
     gap = top_seller_revenue - avg_seller_revenue
-    
+
     display_insight_box(
-        "Gap de Performance",
-        f"Top vendedor fatura R$ {gap:,.2f} acima da média. **Replicar práticas** do {best_seller}.",
+        "Performance Gap",
+        f"The top seller earns R$ {gap:,.2f} above the average. **Replicate the practices** of {best_seller}.",
         "🏆"
     )

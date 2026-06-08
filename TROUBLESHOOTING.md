@@ -1,32 +1,32 @@
-# 🔧 Solução de Problemas - Gemini API
+# 🔧 Troubleshooting - Gemini API
 
-## Problema: Erro 404 com modelo Gemini
+## Problem: 404 error with the Gemini model
 
-Se você ainda estiver vendo o erro:
+If you still see the error:
 ```
-Erro ao gerar insights: 404 models/gemini-1.5-flash is not found
+Error generating insights: 404 models/gemini-1.5-flash is not found
 ```
 
-Mesmo após atualizar o código, isso acontece porque o **Streamlit está usando cache antigo**.
+even after updating the code, it happens because **Streamlit is using a stale cache**.
 
 ---
 
-## ✅ Solução Rápida
+## ✅ Quick Fix
 
-### Opção 1: Limpar Cache pelo Menu (Recomendado)
-1. Na aplicação Streamlit, clique no **menu ☰** (três barrinhas) no canto superior direito
-2. Selecione **"Clear cache"**
-3. Recarregue a página (F5)
+### Option 1: Clear the cache from the menu (Recommended)
+1. In the Streamlit app, click the **☰ menu** (three bars) in the top-right corner
+2. Select **"Clear cache"**
+3. Reload the page (F5)
 
-### Opção 2: Reiniciar Servidor
-1. Pare o servidor Streamlit (Ctrl+C no terminal)
-2. Reinicie com:
+### Option 2: Restart the server
+1. Stop the Streamlit server (Ctrl+C in the terminal)
+2. Restart it with:
 ```powershell
 py -m streamlit run app.py
 ```
 
-### Opção 3: Forçar Recarga Completa
-No terminal, execute:
+### Option 3: Force a full reload
+In the terminal, run:
 ```powershell
 # Windows PowerShell
 Remove-Item -Recurse -Force $env:USERPROFILE\.streamlit\cache
@@ -35,33 +35,33 @@ py -m streamlit run app.py
 
 ---
 
-## 🔍 Verificação
+## 🔍 Verification
 
-O modelo correto configurado em `ai_models.py`:
-- ✅ Linha 20: `model="gemini-2.5-flash"`
-- ✅ Linha 48: `genai.GenerativeModel('gemini-2.5-flash')`
+The correct model configured in `ai_models.py`:
+- ✅ Line 20: `model="gemini-2.5-flash"`
+- ✅ Line 48: `genai.GenerativeModel('gemini-2.5-flash')`
 
-Nenhuma referência a `gemini-1.5-flash` existe no código atual.
+No reference to `gemini-1.5-flash` exists in the current code.
 
 ---
 
-## 📝 Modelos Gemini Disponíveis
+## 📝 Available Gemini Models
 
-Use um destes modelos na sua API Key:
-- **gemini-2.5-flash** (Recomendado - mais recente)
+Use one of these models with your API Key:
+- **gemini-2.5-flash** (Recommended - latest)
 - gemini-2.0-flash-exp
 - gemini-1.5-pro
 - gemini-1.5-flash-latest
 
 ---
 
-## 🎯 Após Limpar Cache
+## 🎯 After Clearing the Cache
 
-1. Vá para **🤖 AI Insights**
-2. Insira sua API Key
-3. Teste com **"🔄 Gerar Insights"**
-4. Deve funcionar perfeitamente! ✅
+1. Go to **🤖 AI Insights**
+2. Enter your API Key
+3. Test with **"🔄 Generate Insights"**
+4. It should work perfectly! ✅
 
 ---
 
-*Última atualização: 01/12/2025*
+*Last updated: 12/01/2025*

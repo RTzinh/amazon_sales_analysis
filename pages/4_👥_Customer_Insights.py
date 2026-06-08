@@ -10,13 +10,13 @@ st.set_page_config(page_title="Customer Insights", page_icon="👥", layout="wid
 apply_custom_css()
 
 st.title("👥 Customer Insights")
-st.markdown("Segmentação e análise comportamental de clientes")
+st.markdown("Customer segmentation and behavioral analysis")
 
 # Load data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados.")
+        st.error("Error loading data.")
         st.stop()
     df = preprocess_data(df_raw)
 
@@ -30,25 +30,25 @@ avg_customer_value = total_revenue / total_customers
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric("👥 Total de Clientes", f"{total_customers:,}")
+    st.metric("👥 Total Customers", f"{total_customers:,}")
 
 with col2:
-    st.metric("🛒 Pedidos/Cliente Médio", f"{avg_orders_per_customer:.1f}")
+    st.metric("🛒 Avg Orders/Customer", f"{avg_orders_per_customer:.1f}")
 
 with col3:
-    st.metric("💰 Valor Médio do Cliente", f"${avg_customer_value:,.2f}")
+    st.metric("💰 Average Customer Value", f"${avg_customer_value:,.2f}")
 
 with col4:
     repeat_customers = df.groupby('CustomerID').size()
     repeat_rate = (repeat_customers[repeat_customers > 1].count() / total_customers) * 100
-    st.metric("🔁 Taxa de Recorrência", f"{repeat_rate:.1f}%")
+    st.metric("🔁 Repeat Rate", f"{repeat_rate:.1f}%")
 
 st.markdown("---")
 
 # RFM Analysis
-st.markdown("### 📊 Segmentação RFM (Recency, Frequency, Monetary)")
+st.markdown("### 📊 RFM Segmentation (Recency, Frequency, Monetary)")
 
-with st.spinner("Calculando segmentos RFM..."):
+with st.spinner("Computing RFM segments..."):
     rfm_data = get_customer_segments_rfm(df)
     rfm_with_churn = predict_customer_churn(rfm_data)
 
@@ -62,8 +62,8 @@ with col1:
         x=segment_counts.values,
         y=segment_counts.index,
         orientation='h',
-        title='Distribuição de Segmentos RFM',
-        labels={'x': 'Número de Clientes', 'y': 'Segmento'},
+        title='RFM Segment Distribution',
+        labels={'x': 'Number of Customers', 'y': 'Segment'},
         color=segment_counts.values,
         color_continuous_scale='Purples'
     )
@@ -83,7 +83,7 @@ with col1:
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("#### 📋 Segmentos")
+    st.markdown("#### 📋 Segments")
     
     segment_revenue = df.merge(
         rfm_with_churn[['Segment']],
@@ -96,14 +96,14 @@ with col2:
         count = segment_counts[segment]
         
         st.markdown(f"""
-        **{segment}**  
-        {count:,} clientes | ${revenue:,.0f}
+        **{segment}**
+        {count:,} customers | ${revenue:,.0f}
         """)
 
 st.markdown("---")
 
 # RFM Scores visualization
-st.markdown("### 💎 Matriz RFM")
+st.markdown("### 💎 RFM Matrix")
 
 col1, col2 = st.columns(2)
 
@@ -116,7 +116,7 @@ with col1:
         size='Monetary',
         color='Segment',
         hover_data=['CustomerID', 'RFM_Score'],
-        title='Recency vs Frequency (tamanho = Monetary)'
+        title='Recency vs Frequency (size = Monetary)'
     )
     
     fig.update_layout(
@@ -156,11 +156,11 @@ with col2:
 st.markdown("---")
 
 # Customer Clustering
-st.markdown("### 🎯 Clustering de Clientes (Machine Learning)")
+st.markdown("### 🎯 Customer Clustering (Machine Learning)")
 
-n_clusters = st.slider("Número de Clusters", 3, 6, 4)
+n_clusters = st.slider("Number of Clusters", 3, 6, 4)
 
-with st.spinner("Executando análise de clustering..."):
+with st.spinner("Running clustering analysis..."):
     customer_clusters, cluster_summary, cluster_map = perform_customer_clustering(df, n_clusters)
 
 col1, col2 = st.columns([2, 1])
@@ -173,35 +173,35 @@ with col1:
         'Order_Count',
         'Avg_Order_Value',
         'Cluster_Name',
-        'Clusters de Clientes (3D)'
+        'Customer Clusters (3D)'
     )
-    
+
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("#### 📊 Perfil dos Clusters")
-    
+    st.markdown("#### 📊 Cluster Profile")
+
     st.dataframe(
         cluster_summary.rename(columns={
-            'Total_Spent': 'Gasto Médio',
-            'Order_Count': 'Pedidos Médios',
-            'Avg_Order_Value': 'Ticket Médio'
+            'Total_Spent': 'Avg Spend',
+            'Order_Count': 'Avg Orders',
+            'Avg_Order_Value': 'Avg Order Value'
         }).style.format({
-            'Gasto Médio': '${:,.2f}',
-            'Pedidos Médios': '{:.1f}',
-            'Ticket Médio': '${:,.2f}'
+            'Avg Spend': '${:,.2f}',
+            'Avg Orders': '{:.1f}',
+            'Avg Order Value': '${:,.2f}'
         }),
         width='stretch'
     )
-    
+
     for cluster_id, cluster_name in cluster_map.items():
         count = len(customer_clusters[customer_clusters['Cluster'] == cluster_id])
-        st.markdown(f"**{cluster_name}**: {count:,} clientes")
+        st.markdown(f"**{cluster_name}**: {count:,} customers")
 
 st.markdown("---")
 
 # Churn Risk Analysis
-st.markdown("### ⚠️ Análise de Risco de Churn")
+st.markdown("### ⚠️ Churn Risk Analysis")
 
 churn_distribution = rfm_with_churn['Churn_Risk'].value_counts()
 
@@ -219,7 +219,7 @@ with col1:
     )])
     
     fig.update_layout(
-        title='Distribuição de Risco de Churn',
+        title='Churn Risk Distribution',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -232,22 +232,22 @@ with col2:
     high_risk_customers = rfm_with_churn[rfm_with_churn['Churn_Risk'] == 'High Risk']
     
     st.metric(
-        "🚨 Clientes em Alto Risco",
+        "🚨 High-Risk Customers",
         len(high_risk_customers),
         f"{(len(high_risk_customers)/len(rfm_with_churn)*100):.1f}%"
     )
-    
+
     high_risk_revenue = df[df['CustomerID'].isin(high_risk_customers.index)]['TotalAmount'].sum()
-    
+
     st.metric(
-        "💰 Receita em Risco",
+        "💰 Revenue at Risk",
         f"${high_risk_revenue:,.2f}",
-        help="Receita total de clientes em alto risco"
+        help="Total revenue from high-risk customers"
     )
 
 # Top customers
 st.markdown("---")
-st.markdown("### 🏆 Top 20 Clientes")
+st.markdown("### 🏆 Top 20 Customers")
 
 top_customers = df.groupby(['CustomerID', 'CustomerName']).agg({
     'TotalAmount': 'sum',
@@ -255,8 +255,8 @@ top_customers = df.groupby(['CustomerID', 'CustomerName']).agg({
     'Quantity': 'sum'
 }).reset_index()
 
-top_customers.columns = ['CustomerID', 'Nome', 'Receita Total', 'Pedidos', 'Itens Comprados']
-top_customers = top_customers.sort_values('Receita Total', ascending=False).head(20)
+top_customers.columns = ['CustomerID', 'Name', 'Total Revenue', 'Orders', 'Items Purchased']
+top_customers = top_customers.sort_values('Total Revenue', ascending=False).head(20)
 
 # Add RFM segment
 top_customers = top_customers.merge(
@@ -267,11 +267,11 @@ top_customers = top_customers.merge(
 )
 
 st.dataframe(
-    top_customers.style.background_gradient(cmap='Purples', subset=['Receita Total'])
+    top_customers.style.background_gradient(cmap='Purples', subset=['Total Revenue'])
                        .format({
-                           'Receita Total': '${:,.2f}',
-                           'Pedidos': '{:,.0f}',
-                           'Itens Comprados': '{:,.0f}'
+                           'Total Revenue': '${:,.2f}',
+                           'Orders': '{:,.0f}',
+                           'Items Purchased': '{:,.0f}'
                        }),
     width='stretch',
     height=500
@@ -280,7 +280,7 @@ st.dataframe(
 st.markdown("---")
 
 # Insights
-st.markdown("### 💡 Insights de Clientes")
+st.markdown("### 💡 Customer Insights")
 
 col1, col2, col3 = st.columns(3)
 
@@ -289,26 +289,26 @@ with col1:
     champions_pct = (champions / total_customers) * 100
     
     display_insight_box(
-        "Clientes Champions",
-        f"{champions:,} clientes ({champions_pct:.1f}%) são Champions - os melhores clientes!",
+        "Champions Customers",
+        f"{champions:,} customers ({champions_pct:.1f}%) are Champions - the best customers!",
         "🏆"
     )
 
 with col2:
     at_risk = len(rfm_with_churn[rfm_with_churn['Churn_Risk'] == 'High Risk'])
-    
+
     display_insight_box(
-        "Ação Requerida",
-        f"{at_risk:,} clientes em alto risco precisam de atenção imediata para retenção.",
+        "Action Required",
+        f"{at_risk:,} high-risk customers need immediate attention for retention.",
         "⚠️"
     )
 
 with col3:
     vip_cluster = customer_clusters[customer_clusters['Cluster_Name'] == 'VIP Customers']
     vip_revenue = vip_cluster['Total_Spent'].sum()
-    
+
     display_insight_box(
         "VIP Customers",
-        f"Cluster VIP gerou ${vip_revenue:,.2f} em receita total.",
+        f"The VIP cluster generated ${vip_revenue:,.2f} in total revenue.",
         "💎"
     )

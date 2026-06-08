@@ -6,18 +6,18 @@ import pandas as pd
 from datetime import datetime
 
 st.set_page_config(
-    page_title="Dashboard Executivo", 
-    page_icon="📊", 
+    page_title="Executive Dashboard",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 apply_custom_css()
 
 # Load data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados.")
+        st.error("Error loading data.")
         st.stop()
     df = preprocess_data(df_raw)
     metrics = get_summary_metrics(df)
@@ -30,10 +30,10 @@ st.markdown("""
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 margin: 0;">
-        📊 Dashboard Executivo
+        📊 Executive Dashboard
     </h1>
     <p style="font-size: 1.2rem; color: #94A3B8; margin-top: 0.5rem;">
-        Visão Estratégica de Performance Comercial
+        Strategic View of Commercial Performance
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -54,8 +54,8 @@ opportunity_margin = delivered_revenue * 0.05
 opportunity_retention = lost_revenue * 0.3
 total_opportunity = opportunity_conversion + opportunity_margin + opportunity_retention
 
-# === 6 KPIs PRINCIPAIS ===
-st.markdown("### 💎 KPIs Principais")
+# === 6 KEY KPIs ===
+st.markdown("### 💎 Key KPIs")
 
 col1, col2, col3 = st.columns(3)
 
@@ -66,12 +66,12 @@ with col1:
                 border-radius: 15px;
                 padding: 1.5rem;
                 text-align: center;">
-        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">💰 FATURAMENTO REAL</div>
+        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">💰 ACTUAL REVENUE</div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #10B981; margin: 0.5rem 0;">
             R$ {delivered_revenue:,.0f}
         </div>
         <div style="font-size: 0.85rem; color: #10B981;">
-            ✓ {conversion_rate:.1f}% de conversão
+            ✓ {conversion_rate:.1f}% conversion
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -83,12 +83,12 @@ with col2:
                 border-radius: 15px;
                 padding: 1.5rem;
                 text-align: center;">
-        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">🎯 TICKET MÉDIO</div>
+        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">🎯 AVERAGE ORDER VALUE</div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #8B5CF6; margin: 0.5rem 0;">
             R$ {avg_ticket:,.2f}
         </div>
         <div style="font-size: 0.85rem; color: #8B5CF6;">
-            {metrics['total_orders']:,} pedidos
+            {metrics['total_orders']:,} orders
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -101,7 +101,7 @@ with col3:
                 border-radius: 15px;
                 padding: 1.5rem;
                 text-align: center;">
-        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">📈 MARGEM LÍQUIDA</div>
+        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">📈 NET MARGIN</div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #3B82F6; margin: 0.5rem 0;">
             {margin_pct:.1f}%
         </div>
@@ -122,12 +122,12 @@ with col1:
                 border-radius: 15px;
                 padding: 1.5rem;
                 text-align: center;">
-        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">⚠️ PERDAS COMERCIAIS</div>
+        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">⚠️ COMMERCIAL LOSSES</div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #EF4444; margin: 0.5rem 0;">
             R$ {lost_revenue:,.0f}
         </div>
         <div style="font-size: 0.85rem; color: #EF4444;">
-            {cancellation_rate:.1f}% de cancelamento
+            {cancellation_rate:.1f}% cancellation
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -139,12 +139,12 @@ with col2:
                 border-radius: 15px;
                 padding: 1.5rem;
                 text-align: center;">
-        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">💡 OPORTUNIDADE TOTAL</div>
+        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">💡 TOTAL OPPORTUNITY</div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #F59E0B; margin: 0.5rem 0;">
             R$ {total_opportunity:,.0f}
         </div>
         <div style="font-size: 0.85rem; color: #F59E0B;">
-            +{(total_opportunity/delivered_revenue)*100:.1f}% potencial
+            +{(total_opportunity/delivered_revenue)*100:.1f}% potential
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -157,20 +157,20 @@ with col3:
                 border-radius: 15px;
                 padding: 1.5rem;
                 text-align: center;">
-        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">🚀 ROI PROJETADO</div>
+        <div style="font-size: 0.9rem; color: #94A3B8; font-weight: 500;">🚀 PROJECTED ROI</div>
         <div style="font-size: 2.5rem; font-weight: 700; color: #10B981; margin: 0.5rem 0;">
             {roi_projected:,.0f}%
         </div>
         <div style="font-size: 0.85rem; color: #10B981;">
-            em 90 dias
+            in 90 days
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("---")
 
-# === GRÁFICO DE TENDÊNCIA ===
-st.markdown("### 📈 Tendência de Faturamento")
+# === TREND CHART ===
+st.markdown("### 📈 Revenue Trend")
 
 # Monthly revenue
 monthly_revenue = df[df['OrderStatus'] == 'Delivered'].groupby(
@@ -189,7 +189,7 @@ fig.add_trace(go.Scatter(
     line=dict(color='#8B5CF6', width=4),
     mode='lines+markers',
     marker=dict(size=10, color='#8B5CF6', symbol='circle'),
-    hovertemplate='<b>%{x}</b><br>Faturamento: R$ %{y:,.2f}<extra></extra>'
+    hovertemplate='<b>%{x}</b><br>Revenue: R$ %{y:,.2f}<extra></extra>'
 ))
 
 # Add trend line
@@ -206,8 +206,8 @@ fig.add_trace(go.Scatter(
     y=trend,
     mode='lines',
     line=dict(color='#3B82F6', width=3, dash='dash'),
-    name='Tendência',
-    hovertemplate='Tendência: R$ %{y:,.2f}<extra></extra>'
+    name='Trend',
+    hovertemplate='Trend: R$ %{y:,.2f}<extra></extra>'
 ))
 
 fig.update_layout(
@@ -236,7 +236,7 @@ st.plotly_chart(fig, width='stretch')
 st.markdown("---")
 
 # === 3 QUICK WINS ===
-st.markdown("### 🎯 Quick Wins - Ações Prioritárias")
+st.markdown("### 🎯 Quick Wins - Priority Actions")
 
 col1, col2, col3 = st.columns(3)
 
@@ -249,18 +249,18 @@ with col1:
                 padding: 1.5rem;">
         <div style="text-align: center; font-size: 3rem; margin-bottom: 0.5rem;">🎯</div>
         <h3 style="color: #8B5CF6; margin: 0.5rem 0; text-align: center;">Quick Win #1</h3>
-        <h4 style="color: #F1F5F9; text-align: center; margin: 0.5rem 0;">Aumentar Conversão</h4>
+        <h4 style="color: #F1F5F9; text-align: center; margin: 0.5rem 0;">Increase Conversion</h4>
         <p style="color: #94A3B8; font-size: 0.9rem; line-height: 1.6;">
-            • Implementar follow-up em 24h<br>
-            • Confirmar pedidos pendentes<br>
-            • Reduzir de {conversion_rate:.1f}% → 77%
+            • Implement 24h follow-up<br>
+            • Confirm pending orders<br>
+            • Raise from {conversion_rate:.1f}% → 77%
         </p>
         <div style="background: rgba(139, 92, 246, 0.2); 
                     border-radius: 10px; 
                     padding: 1rem; 
                     text-align: center;
                     margin-top: 1rem;">
-            <div style="font-size: 0.85rem; color: #94A3B8;">Ganho Estimado</div>
+            <div style="font-size: 0.85rem; color: #94A3B8;">Estimated Gain</div>
             <div style="font-size: 1.8rem; font-weight: 700; color: #8B5CF6;">
                 R$ {gain1:,.0f}
             </div>
@@ -277,18 +277,18 @@ with col2:
                 padding: 1.5rem;">
         <div style="text-align: center; font-size: 3rem; margin-bottom: 0.5rem;">💰</div>
         <h3 style="color: #3B82F6; margin: 0.5rem 0; text-align: center;">Quick Win #2</h3>
-        <h4 style="color: #F1F5F9; text-align: center; margin: 0.5rem 0;">Otimizar Margem</h4>
+        <h4 style="color: #F1F5F9; text-align: center; margin: 0.5rem 0;">Optimize Margin</h4>
         <p style="color: #94A3B8; font-size: 0.9rem; line-height: 1.6;">
-            • Revisar política de desconto<br>
-            • Treinar equipe em valor<br>
-            • Aumentar margem em +2%
+            • Review discount policy<br>
+            • Train the team on value selling<br>
+            • Increase margin by +2%
         </p>
         <div style="background: rgba(59, 130, 246, 0.2); 
                     border-radius: 10px; 
                     padding: 1rem; 
                     text-align: center;
                     margin-top: 1rem;">
-            <div style="font-size: 0.85rem; color: #94A3B8;">Ganho Estimado</div>
+            <div style="font-size: 0.85rem; color: #94A3B8;">Estimated Gain</div>
             <div style="font-size: 1.8rem; font-weight: 700; color: #3B82F6;">
                 R$ {gain2:,.0f}
             </div>
@@ -305,18 +305,18 @@ with col3:
                 padding: 1.5rem;">
         <div style="text-align: center; font-size: 3rem; margin-bottom: 0.5rem;">⚡</div>
         <h3 style="color: #10B981; margin: 0.5rem 0; text-align: center;">Quick Win #3</h3>
-        <h4 style="color: #F1F5F9; text-align: center; margin: 0.5rem 0;">Reduzir Perdas</h4>
+        <h4 style="color: #F1F5F9; text-align: center; margin: 0.5rem 0;">Reduce Losses</h4>
         <p style="color: #94A3B8; font-size: 0.9rem; line-height: 1.6;">
-            • Investigar cancelamentos<br>
-            • Melhorar processo pós-venda<br>
-            • Reduzir perdas em -20%
+            • Investigate cancellations<br>
+            • Improve the post-sale process<br>
+            • Reduce losses by -20%
         </p>
         <div style="background: rgba(16, 185, 129, 0.2); 
                     border-radius: 10px; 
                     padding: 1rem; 
                     text-align: center;
                     margin-top: 1rem;">
-            <div style="font-size: 0.85rem; color: #94A3B8;">Ganho Estimado</div>
+            <div style="font-size: 0.85rem; color: #94A3B8;">Estimated Gain</div>
             <div style="font-size: 1.8rem; font-weight: 700; color: #10B981;">
                 R$ {gain3:,.0f}
             </div>
@@ -326,11 +326,11 @@ with col3:
 
 st.markdown("---")
 
-# === BOTÃO VER PLANO COMPLETO === 
+# === VIEW FULL PLAN BUTTON ===
 st.markdown("""
 <div style="text-align: center; padding: 2rem 0;">
     <p style="font-size: 1.1rem; color: #94A3B8; margin-bottom: 1.5rem;">
-        Veja o plano completo de ação com ROI detalhado e timeline de 90 dias
+        See the full action plan with detailed ROI and a 90-day timeline
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -338,8 +338,8 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
-    if st.button("🎯 VER PLANO DE AÇÃO COMPLETO", width='stretch', type="primary"):
-        st.switch_page("pages/9_🎯_Plano_de_Ação.py")
+    if st.button("🎯 VIEW FULL ACTION PLAN", width='stretch', type="primary"):
+        st.switch_page("pages/9_🎯_Action_Plan.py")
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -350,8 +350,8 @@ st.markdown("""
             border-top: 1px solid rgba(148, 163, 184, 0.2);
             margin-top: 2rem;">
     <p style="color: #64748B; font-size: 0.9rem;">
-        📊 Dashboard Executivo | Análise de Performance Comercial<br>
-        <span style="font-size: 0.85rem;">Desenvolvido com metodologia de consultoria profissional</span>
+        📊 Executive Dashboard | Commercial Performance Analysis<br>
+        <span style="font-size: 0.85rem;">Built with a professional consulting methodology</span>
     </p>
 </div>
 """, unsafe_allow_html=True)

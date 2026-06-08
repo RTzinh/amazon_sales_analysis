@@ -9,13 +9,13 @@ st.set_page_config(page_title="Geographic Analysis", page_icon="🗺️", layout
 apply_custom_css()
 
 st.title("🗺️ Geographic Analysis")
-st.markdown("Distribuição geográfica de vendas e análise regional")
+st.markdown("Geographic sales distribution and regional analysis")
 
 # Load data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados.")
+        st.error("Error loading data.")
         st.stop()
     df = preprocess_data(df_raw)
 
@@ -27,24 +27,24 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     total_countries = df['Country'].nunique()
-    st.metric("🌍 Países Ativos", total_countries)
+    st.metric("🌍 Active Countries", total_countries)
 
 with col2:
     top_country = geo_summary.index[0]
-    st.metric("🏆 País Líder", top_country)
+    st.metric("🏆 Leading Country", top_country)
 
 with col3:
     top_country_revenue = geo_summary.iloc[0]['Revenue']
-    st.metric("💰 Receita do Líder", f"${top_country_revenue:,.2f}")
+    st.metric("💰 Leader's Revenue", f"${top_country_revenue:,.2f}")
 
 with col4:
     total_cities = df['City'].nunique()
-    st.metric("🏙️ Cidades Atendidas", total_cities)
+    st.metric("🏙️ Cities Served", total_cities)
 
 st.markdown("---")
 
 # World map
-st.markdown("### 🌎 Mapa de Vendas por País")
+st.markdown("### 🌎 Sales Map by Country")
 
 country_data = df.groupby('Country').agg({
     'TotalAmount': 'sum',
@@ -95,7 +95,7 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### 💵 Receita por País")
+    st.markdown("### 💵 Revenue by Country")
     
     fig = go.Figure(data=[
         go.Bar(
@@ -113,7 +113,7 @@ with col1:
     ])
     
     fig.update_layout(
-        xaxis_title='Receita ($)',
+        xaxis_title='Revenue ($)',
         yaxis_title='',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -122,11 +122,11 @@ with col1:
         yaxis={'showgrid': False},
         height=400
     )
-    
+
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("### 📦 Pedidos por País")
+    st.markdown("### 📦 Orders by Country")
     
     country_orders = df['Country'].value_counts()
     
@@ -140,7 +140,7 @@ with col2:
     fig.update_traces(
         textposition='inside',
         textinfo='percent+label',
-        hovertemplate='<b>%{label}</b><br>Pedidos: %{value:,}<br>Percentual: %{percent}<extra></extra>'
+        hovertemplate='<b>%{label}</b><br>Orders: %{value:,}<br>Percentage: %{percent}<extra></extra>'
     )
     
     fig.update_layout(
@@ -156,22 +156,22 @@ with col2:
 st.markdown("---")
 
 # State Analysis (for countries with state data)
-st.markdown("### 📍 Análise por Estado/Região")
+st.markdown("### 📍 Analysis by State/Region")
 
 state_revenue = df.groupby(['Country', 'State']).agg({
     'TotalAmount': 'sum',
     'OrderID': 'count'
 }).reset_index()
 
-state_revenue.columns = ['País', 'Estado', 'Receita', 'Pedidos']
-state_revenue = state_revenue.sort_values('Receita', ascending=False)
+state_revenue.columns = ['Country', 'State', 'Revenue', 'Orders']
+state_revenue = state_revenue.sort_values('Revenue', ascending=False)
 
 # Show top 20 states
 st.dataframe(
-    state_revenue.head(20).style.background_gradient(cmap='Purples', subset=['Receita'])
+    state_revenue.head(20).style.background_gradient(cmap='Purples', subset=['Revenue'])
                                 .format({
-                                    'Receita': '${:,.2f}',
-                                    'Pedidos': '{:,.0f}'
+                                    'Revenue': '${:,.2f}',
+                                    'Orders': '{:,.0f}'
                                 }),
     width='stretch',
     height=400
@@ -180,7 +180,7 @@ st.dataframe(
 st.markdown("---")
 
 # City Analysis
-st.markdown("### 🏙️ Top 15 Cidades")
+st.markdown("### 🏙️ Top 15 Cities")
 
 city_data = df.groupby('City').agg({
     'TotalAmount': 'sum',
@@ -188,27 +188,27 @@ city_data = df.groupby('City').agg({
     'Country': 'first'
 }).reset_index()
 
-city_data.columns = ['Cidade', 'Receita', 'Pedidos', 'País']
-city_data = city_data.sort_values('Receita', ascending=False).head(15)
+city_data.columns = ['City', 'Revenue', 'Orders', 'Country']
+city_data = city_data.sort_values('Revenue', ascending=False).head(15)
 
 fig = go.Figure()
 
 fig.add_trace(go.Bar(
-    x=city_data['Cidade'],
-    y=city_data['Receita'],
+    x=city_data['City'],
+    y=city_data['Revenue'],
     marker=dict(
-        color=city_data['Receita'],
+        color=city_data['Revenue'],
         colorscale='Viridis',
         showscale=False
     ),
-    text=[f'${v:,.0f}' for v in city_data['Receita']],
+    text=[f'${v:,.0f}' for v in city_data['Revenue']],
     textposition='outside',
-    hovertemplate='<b>%{x}</b><br>Receita: $%{y:,.2f}<extra></extra>'
+    hovertemplate='<b>%{x}</b><br>Revenue: $%{y:,.2f}<extra></extra>'
 ))
 
 fig.update_layout(
     xaxis_title='',
-    yaxis_title='Receita ($)',
+    yaxis_title='Revenue ($)',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font={'color': '#F1F5F9'},
@@ -222,12 +222,12 @@ st.plotly_chart(fig, width='stretch')
 st.markdown("---")
 
 # Shipping Cost Analysis
-st.markdown("### 🚚 Análise de Custos de Frete")
+st.markdown("### 🚚 Shipping Cost Analysis")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("#### Custo Médio de Frete por País")
+    st.markdown("#### Average Shipping Cost by Country")
     
     fig = go.Figure(data=[
         go.Bar(
@@ -245,7 +245,7 @@ with col1:
     ])
     
     fig.update_layout(
-        xaxis_title='Custo Médio ($)',
+        xaxis_title='Average Cost ($)',
         yaxis_title='',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -258,7 +258,7 @@ with col1:
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("#### Custo de Frete vs Valor do Pedido")
+    st.markdown("#### Shipping Cost vs Order Value")
     
     # Sample for better visualization
     sample_df = df.sample(min(5000, len(df)))
@@ -273,8 +273,8 @@ with col2:
     )
     
     fig.update_layout(
-        xaxis_title='Valor do Pedido ($)',
-        yaxis_title='Custo de Frete ($)',
+        xaxis_title='Order Value ($)',
+        yaxis_title='Shipping Cost ($)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -288,7 +288,7 @@ with col2:
 st.markdown("---")
 
 # Regional Performance Metrics
-st.markdown("### 📊 Métricas Regionais Detalhadas")
+st.markdown("### 📊 Detailed Regional Metrics")
 
 regional_metrics = df.groupby('Country').agg({
     'TotalAmount': ['sum', 'mean'],
@@ -299,21 +299,21 @@ regional_metrics = df.groupby('Country').agg({
     'CustomerID': 'nunique'
 }).round(2)
 
-regional_metrics.columns = ['Receita Total', 'Ticket Médio', 'Pedidos', 
-                            'Itens Vendidos', 'Frete Médio', 'Desconto Médio', 'Clientes']
+regional_metrics.columns = ['Total Revenue', 'Average Order Value', 'Orders',
+                            'Items Sold', 'Average Shipping', 'Average Discount', 'Customers']
 
-regional_metrics = regional_metrics.sort_values('Receita Total', ascending=False)
+regional_metrics = regional_metrics.sort_values('Total Revenue', ascending=False)
 
 st.dataframe(
-    regional_metrics.style.background_gradient(cmap='Purples', subset=['Receita Total', 'Pedidos'])
+    regional_metrics.style.background_gradient(cmap='Purples', subset=['Total Revenue', 'Orders'])
                           .format({
-                              'Receita Total': '${:,.2f}',
-                              'Ticket Médio': '${:,.2f}',
-                              'Pedidos': '{:,.0f}',
-                              'Itens Vendidos': '{:,.0f}',
-                              'Frete Médio': '${:,.2f}',
-                              'Desconto Médio': '{:.1%}',
-                              'Clientes': '{:,.0f}'
+                              'Total Revenue': '${:,.2f}',
+                              'Average Order Value': '${:,.2f}',
+                              'Orders': '{:,.0f}',
+                              'Items Sold': '{:,.0f}',
+                              'Average Shipping': '${:,.2f}',
+                              'Average Discount': '{:.1%}',
+                              'Customers': '{:,.0f}'
                           }),
     width='stretch'
 )
@@ -321,7 +321,7 @@ st.dataframe(
 st.markdown("---")
 
 # Insights
-st.markdown("### 💡 Insights Geográficos")
+st.markdown("### 💡 Geographic Insights")
 
 col1, col2, col3 = st.columns(3)
 
@@ -329,26 +329,26 @@ with col1:
     us_revenue_pct = (geo_summary.loc['United States', 'Revenue'] / df['TotalAmount'].sum()) * 100
     
     display_insight_box(
-        "Concentração nos EUA",
-        f"Estados Unidos representa {us_revenue_pct:.1f}% de toda a receita.",
+        "US Concentration",
+        f"The United States accounts for {us_revenue_pct:.1f}% of all revenue.",
         "🇺🇸"
     )
 
 with col2:
     highest_shipping = geo_summary['Avg_Shipping_Cost'].idxmax()
     highest_shipping_cost = geo_summary.loc[highest_shipping, 'Avg_Shipping_Cost']
-    
+
     display_insight_box(
-        "Frete Mais Caro",
-        f"{highest_shipping} tem o custo médio de frete mais alto: ${highest_shipping_cost:.2f}.",
+        "Most Expensive Shipping",
+        f"{highest_shipping} has the highest average shipping cost: ${highest_shipping_cost:.2f}.",
         "💸"
     )
 
 with col3:
     top_city = city_data.iloc[0]
-    
+
     display_insight_box(
-        "Cidade Campeã",
-        f"{top_city['Cidade']} ({top_city['País']}) lidera com ${top_city['Receita']:,.2f}.",
+        "Top City",
+        f"{top_city['City']} ({top_city['Country']}) leads with ${top_city['Revenue']:,.2f}.",
         "🏆"
     )

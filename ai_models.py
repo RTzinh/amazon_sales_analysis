@@ -6,11 +6,11 @@ from sklearn.ensemble import IsolationForest
 import streamlit as st
 import os
 
-# NOTE: as importações de LLM (google.generativeai / langchain) são feitas de forma
-# preguiçosa (lazy) dentro das funções que as usam. Assim, páginas que só precisam
-# das funções de ML puro (clustering, churn, anomalias) — como Customer Insights —
-# continuam carregando mesmo que os pacotes opcionais de IA estejam ausentes ou com
-# APIs incompatíveis (ex.: langchain.agents.agent_types removido em versões novas).
+# NOTE: the LLM imports (google.generativeai / langchain) are done lazily inside the
+# functions that use them. This way, pages that only need the pure-ML functions
+# (clustering, churn, anomalies) — such as Customer Insights — keep loading even when
+# the optional AI packages are missing or have incompatible APIs (e.g.
+# langchain.agents.agent_types was removed in newer versions).
 
 # Configure Gemini API
 def configure_gemini(api_key):
@@ -36,7 +36,7 @@ def create_data_agent(df, api_key):
     try:
         from langchain.agents.agent_types import AgentType
     except ImportError:
-        # AgentType foi movido em versões recentes do langchain
+        # AgentType was moved in recent versions of langchain
         from langchain.agents import AgentType
 
     llm = get_gemini_llm(api_key)
@@ -59,44 +59,44 @@ def analyze_with_gemini(prompt, api_key, data_context=None):
         import google.generativeai as genai
         model = genai.GenerativeModel('gemini-2.5-flash')
         
-        full_prompt = f"""Você é um analista de dados especializado em e-commerce.
-        
-Contexto dos dados: {data_context if data_context else 'Dataset de vendas Amazon com 100k transações'}
+        full_prompt = f"""You are a data analyst specialized in e-commerce.
+
+Data context: {data_context if data_context else 'Amazon sales dataset with 100k transactions'}
 
 {prompt}
 
-Forneça uma análise profissional, concisa e acionável."""
-        
+Provide a professional, concise and actionable analysis. Respond in English."""
+
         response = model.generate_content(full_prompt)
         return response.text
     except Exception as e:
-        return f"Erro ao gerar insights: {str(e)}"
+        return f"Error generating insights: {str(e)}"
 
 def generate_business_insights(df, metrics, api_key):
     """Generate comprehensive business insights using Gemini"""
     
     # Prepare data summary
     data_context = f"""
-    Total de Vendas: ${metrics['total_revenue']:,.2f}
-    Total de Pedidos: {metrics['total_orders']:,}
-    Ticket Médio: ${metrics['avg_order_value']:.2f}
-    Taxa de Conversão: {metrics['conversion_rate']:.1f}%
-    Taxa de Cancelamento: {metrics['cancellation_rate']:.1f}%
-    
-    Top 3 Categorias:
+    Total Sales: ${metrics['total_revenue']:,.2f}
+    Total Orders: {metrics['total_orders']:,}
+    Average Order Value: ${metrics['avg_order_value']:.2f}
+    Conversion Rate: {metrics['conversion_rate']:.1f}%
+    Cancellation Rate: {metrics['cancellation_rate']:.1f}%
+
+    Top 3 Categories:
     {df.groupby('Category')['TotalAmount'].sum().nlargest(3).to_string()}
-    
-    Top 3 Países:
+
+    Top 3 Countries:
     {df.groupby('Country')['TotalAmount'].sum().nlargest(3).to_string()}
     """
-    
-    prompt = """Baseado nos dados acima, forneça:
 
-1. **3 Insights Principais**: Padrões importantes identificados nos dados
-2. **3 Oportunidades**: Áreas com potencial de crescimento
-3. **3 Recomendações Acionáveis**: Ações específicas para melhorar o desempenho
+    prompt = """Based on the data above, provide:
 
-Seja específico e orientado a resultados de negócio."""
+1. **3 Key Insights**: Important patterns identified in the data
+2. **3 Opportunities**: Areas with growth potential
+3. **3 Actionable Recommendations**: Specific actions to improve performance
+
+Be specific and business-results oriented."""
     
     return analyze_with_gemini(prompt, api_key, data_context)
 
@@ -106,16 +106,16 @@ def ask_data_question(df, question, api_key):
         agent = create_data_agent(df, api_key)
         
         # Add context to question
-        enhanced_question = f"""Analise os dados de vendas da Amazon e responda:
+        enhanced_question = f"""Analyze the Amazon sales data and answer:
 
 {question}
 
-Forneça a resposta em português, com números específicos e insights acionáveis."""
-        
+Provide the answer in English, with specific numbers and actionable insights."""
+
         response = agent.run(enhanced_question)
         return response
     except Exception as e:
-        return f"Erro ao processar pergunta: {str(e)}\n\nTente reformular a pergunta de forma mais específica."
+        return f"Error processing question: {str(e)}\n\nTry rephrasing the question more specifically."
 
 @st.cache_data
 def perform_customer_clustering(df, n_clusters=4):
@@ -191,29 +191,29 @@ def detect_anomalies(df, contamination=0.05):
 def predict_customer_churn(rfm_data):
     """Identify customers at risk of churning based on RFM.
 
-    Vetorizado: os limiares (quantis/mediana) são calculados UMA vez sobre as
-    colunas inteiras, em vez de recalculados a cada linha dentro de um apply.
-    Isso evita ~159s de processamento em ~43k clientes (a versão antiga com
-    apply linha-a-linha fazia o app travar na tela "Calculando segmentos RFM...").
-    O resultado é idêntico ao da lógica original.
+    Vectorized: the thresholds (quantiles/median) are computed ONCE over the whole
+    columns, instead of being recomputed for each row inside an apply. This avoids
+    ~159s of processing on ~43k customers (the old row-by-row apply version made the
+    app freeze on the "Computing RFM segments..." screen). The result is identical to
+    the original logic.
     """
     recency = rfm_data['Recency']
     frequency = rfm_data['Frequency']
 
-    # Limiares calculados uma única vez
+    # Thresholds computed only once
     rec_q75 = recency.quantile(0.75)
     rec_median = recency.median()
     freq_q25 = frequency.quantile(0.25)
 
-    # High recency (not bought recently) e low frequency = alto risco de churn
+    # High recency (not bought recently) and low frequency = high churn risk
     high_recency = recency > rec_q75
     low_frequency = frequency < freq_q25
 
-    # Padrão: Low Risk; aplica as regras na mesma ordem da lógica original
+    # Default: Low Risk; apply the rules in the same order as the original logic
     churn = pd.Series('Low Risk', index=rfm_data.index)
-    # Para recência acima da mediana (mas não no top 25%) -> Medium Risk
+    # For recency above the median (but not in the top 25%) -> Medium Risk
     churn[recency > rec_median] = 'Medium Risk'
-    # Para recência no top 25%: Medium Risk por padrão, High Risk se frequência baixa
+    # For recency in the top 25%: Medium Risk by default, High Risk if frequency is low
     churn[high_recency] = 'Medium Risk'
     churn[high_recency & low_frequency] = 'High Risk'
 
@@ -255,23 +255,23 @@ def analyze_sales_trends(df, api_key):
     monthly_sales['OrderDate'] = monthly_sales['OrderDate'].astype(str)
     
     trend_context = f"""
-    Dados de vendas mensais:
+    Monthly sales data:
     {monthly_sales.to_string()}
-    
-    Estatísticas:
-    - Vendas médias mensais: ${monthly_sales['TotalAmount'].mean():,.2f}
-    - Crescimento total: {((monthly_sales['TotalAmount'].iloc[-1] / monthly_sales['TotalAmount'].iloc[0] - 1) * 100):.1f}%
-    - Mês com maior venda: {monthly_sales.loc[monthly_sales['TotalAmount'].idxmax(), 'OrderDate']}
+
+    Statistics:
+    - Average monthly sales: ${monthly_sales['TotalAmount'].mean():,.2f}
+    - Total growth: {((monthly_sales['TotalAmount'].iloc[-1] / monthly_sales['TotalAmount'].iloc[0] - 1) * 100):.1f}%
+    - Highest-selling month: {monthly_sales.loc[monthly_sales['TotalAmount'].idxmax(), 'OrderDate']}
     """
-    
-    prompt = """Analise as tendências de vendas e forneça:
 
-1. Padrão de crescimento observado
-2. Sazonalidade identificada
-3. Previsão qualitativa para próximos meses
-4. Recomendações estratégicas
+    prompt = """Analyze the sales trends and provide:
 
-Seja específico e orientado a ação."""
+1. Observed growth pattern
+2. Identified seasonality
+3. Qualitative forecast for the coming months
+4. Strategic recommendations
+
+Be specific and action oriented."""
     
     return analyze_with_gemini(prompt, api_key, trend_context)
 
@@ -288,17 +288,17 @@ def analyze_category_performance(df, api_key):
     category_stats = category_stats.sort_values('Total_Revenue', ascending=False)
     
     context = f"""
-    Performance por categoria:
+    Performance by category:
     {category_stats.to_string()}
     """
-    
-    prompt = """Analise o desempenho das categorias e forneça:
 
-1. Categorias estrela (alto desempenho)
-2. Categorias com oportunidade de crescimento
-3. Insights sobre estratégia de desconto
-4. Recomendações de mix de produtos
+    prompt = """Analyze the category performance and provide:
 
-Seja específico com números."""
+1. Star categories (high performance)
+2. Categories with growth opportunity
+3. Insights on discount strategy
+4. Product-mix recommendations
+
+Be specific with numbers."""
     
     return analyze_with_gemini(prompt, api_key, context)

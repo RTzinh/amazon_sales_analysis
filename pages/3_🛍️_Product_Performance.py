@@ -9,30 +9,30 @@ st.set_page_config(page_title="Product Performance", page_icon="🛍️", layout
 apply_custom_css()
 
 st.title("🛍️ Product Performance")
-st.markdown("Análise detalhada de produtos, categorias e marcas")
+st.markdown("Detailed analysis of products, categories and brands")
 
 # Load data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados.")
+        st.error("Error loading data.")
         st.stop()
     df = preprocess_data(df_raw)
 
 # Sidebar options
-st.sidebar.header("⚙️ Opções")
+st.sidebar.header("⚙️ Options")
 
-top_n = st.sidebar.slider("Número de Top Produtos", 5, 50, 20)
+top_n = st.sidebar.slider("Number of Top Products", 5, 50, 20)
 
 metric_choice = st.sidebar.radio(
-    "Métrica Principal",
-    ["Receita", "Quantidade", "Pedidos"]
+    "Primary Metric",
+    ["Revenue", "Quantity", "Orders"]
 )
 
-metric_map = {"Receita": "revenue", "Quantidade": "quantity", "Pedidos": "orders"}
+metric_map = {"Revenue": "revenue", "Quantity": "quantity", "Orders": "orders"}
 
 # Category Performance Overview
-st.markdown("### 📊 Performance por Categoria")
+st.markdown("### 📊 Performance by Category")
 
 category_stats = get_category_performance(df)
 
@@ -41,29 +41,29 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     best_category = category_stats['Revenue'].idxmax()
     st.metric(
-        "🏆 Categoria Líder",
+        "🏆 Leading Category",
         best_category,
         f"${category_stats.loc[best_category, 'Revenue']:,.0f}"
     )
 
 with col2:
     total_categories = len(category_stats)
-    st.metric("📦 Total de Categorias", total_categories)
+    st.metric("📦 Total Categories", total_categories)
 
 with col3:
     avg_margin = category_stats['Avg_Margin'].mean()
-    st.metric("💰 Margem Média", f"{avg_margin:.1f}%")
+    st.metric("💰 Average Margin", f"{avg_margin:.1f}%")
 
 with col4:
     high_discount_cat = category_stats['Avg_Discount'].idxmax()
     st.metric(
-        "🏷️ Maior Desconto Médio",
+        "🏷️ Highest Average Discount",
         high_discount_cat,
         f"{category_stats.loc[high_discount_cat, 'Avg_Discount']*100:.1f}%"
     )
 
 # Category comparison table
-st.markdown("#### 📋 Comparativo de Categorias")
+st.markdown("#### 📋 Category Comparison")
 
 st.dataframe(
     category_stats.style.background_gradient(cmap='Purples', subset=['Revenue', 'Net_Revenue'])
@@ -86,8 +86,8 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### 💵 Receita por Categoria")
-    
+    st.markdown("### 💵 Revenue by Category")
+
     fig = px.bar(
         category_stats.reset_index(),
         x='Category',
@@ -96,12 +96,12 @@ with col1:
         color_continuous_scale='Purples',
         text='Revenue'
     )
-    
+
     fig.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
-    
+
     fig.update_layout(
         xaxis_title='',
-        yaxis_title='Receita ($)',
+        yaxis_title='Revenue ($)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -114,7 +114,7 @@ with col1:
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("### 📈 Margem vs Desconto por Categoria")
+    st.markdown("### 📈 Margin vs Discount by Category")
     
     fig = px.scatter(
         category_stats.reset_index(),
@@ -129,8 +129,8 @@ with col2:
     fig.update_traces(textposition='top center')
     
     fig.update_layout(
-        xaxis_title='Desconto Médio (%)',
-        yaxis_title='Margem Média (%)',
+        xaxis_title='Average Discount (%)',
+        yaxis_title='Average Margin (%)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -145,14 +145,14 @@ with col2:
 st.markdown("---")
 
 # Top Products
-st.markdown(f"### 🏆 Top {top_n} Produtos - {metric_choice}")
+st.markdown(f"### 🏆 Top {top_n} Products - {metric_choice}")
 
 top_products_data = get_top_products(df, top_n, metric_map[metric_choice])
 
-if metric_choice == "Receita":
+if metric_choice == "Revenue":
     col_name = 'TotalAmount'
     prefix = '$'
-elif metric_choice == "Quantidade":
+elif metric_choice == "Quantity":
     col_name = 'Quantity'
     prefix = ''
 else:
@@ -163,10 +163,10 @@ fig = go.Figure()
 
 colors = px.colors.sequential.Purples_r[:len(top_products_data)]
 
-if metric_choice == "Receita":
+if metric_choice == "Revenue":
     values = top_products_data[col_name]
     text = [f'${v:,.0f}' for v in values]
-elif metric_choice == "Quantidade":
+elif metric_choice == "Quantity":
     values = top_products_data[col_name]
     text = [f'{v:,.0f}' for v in values]
 else:
@@ -204,7 +204,7 @@ st.plotly_chart(fig, width='stretch')
 st.markdown("---")
 
 # Brand Analysis
-st.markdown("### 🏷️ Análise de Marcas")
+st.markdown("### 🏷️ Brand Analysis")
 
 col1, col2 = st.columns([2, 1])
 
@@ -225,7 +225,7 @@ with col1:
     ))
     
     fig.update_layout(
-        xaxis_title='Receita ($)',
+        xaxis_title='Revenue ($)',
         yaxis_title='',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -233,7 +233,7 @@ with col1:
         xaxis={'showgrid': True, 'gridcolor': 'rgba(148, 163, 184, 0.1)'},
         yaxis={'showgrid': False},
         height=500,
-        title='Top 15 Marcas por Receita'
+        title='Top 15 Brands by Revenue'
     )
     
     st.plotly_chart(fig, width='stretch')
@@ -243,13 +243,13 @@ with col2:
     top_brand_revenue = df.groupby('Brand')['TotalAmount'].sum().max()
     
     st.metric(
-        "🥇 Marca #1",
+        "🥇 Brand #1",
         top_brand,
         f"${top_brand_revenue:,.0f}"
     )
-    
+
     total_brands = df['Brand'].nunique()
-    st.metric("🏷️ Total de Marcas", total_brands)
+    st.metric("🏷️ Total Brands", total_brands)
     
     # Market share
     total_revenue = df['TotalAmount'].sum()
@@ -259,7 +259,7 @@ with col2:
 st.markdown("---")
 
 # Price vs Quantity Analysis
-st.markdown("### 💰 Análise Preço vs Quantidade")
+st.markdown("### 💰 Price vs Quantity Analysis")
 
 product_summary = df.groupby('ProductName').agg({
     'UnitPrice': 'mean',
@@ -278,12 +278,12 @@ fig = px.scatter(
     color='Category',
     hover_name='ProductName',
     log_x=True,
-    title='Relação entre Preço Unitário e Quantidade Vendida'
+    title='Relationship between Unit Price and Quantity Sold'
 )
 
 fig.update_layout(
-    xaxis_title='Preço Unitário ($) - Escala Log',
-    yaxis_title='Quantidade Total Vendida',
+    xaxis_title='Unit Price ($) - Log Scale',
+    yaxis_title='Total Quantity Sold',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     font={'color': '#F1F5F9'},
@@ -297,7 +297,7 @@ st.plotly_chart(fig, width='stretch')
 st.markdown("---")
 
 # Insights
-st.markdown("### 💡 Insights de Produtos")
+st.markdown("### 💡 Product Insights")
 
 col1, col2, col3 = st.columns(3)
 
@@ -306,8 +306,8 @@ with col1:
     top_product_revenue = df.groupby('ProductName')['TotalAmount'].sum().max()
     
     display_insight_box(
-        "Produto Campeão",
-        f"{top_product[:40]}... gerou ${top_product_revenue:,.2f} em receita.",
+        "Top Product",
+        f"{top_product[:40]}... generated ${top_product_revenue:,.2f} in revenue.",
         "🏆"
     )
 
@@ -316,8 +316,8 @@ with col2:
     margin = category_stats.loc[most_profitable_cat, 'Avg_Margin']
     
     display_insight_box(
-        "Categoria Mais Lucrativa",
-        f"{most_profitable_cat} tem margem média de {margin:.1f}%.",
+        "Most Profitable Category",
+        f"{most_profitable_cat} has an average margin of {margin:.1f}%.",
         "💰"
     )
 
@@ -326,7 +326,7 @@ with col3:
     avg_product_revenue = df.groupby('ProductID')['TotalAmount'].sum().mean()
     
     display_insight_box(
-        "Diversificação",
-        f"{total_products} produtos únicos com receita média de ${avg_product_revenue:,.2f}.",
+        "Diversification",
+        f"{total_products} unique products with an average revenue of ${avg_product_revenue:,.2f}.",
         "📦"
     )

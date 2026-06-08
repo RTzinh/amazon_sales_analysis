@@ -11,27 +11,27 @@ st.set_page_config(page_title="Sales Analytics", page_icon="📈", layout="wide"
 apply_custom_css()
 
 st.title("📈 Sales Analytics")
-st.markdown("Análise temporal de vendas, tendências e padrões sazonais")
+st.markdown("Time-based analysis of sales, trends and seasonal patterns")
 
 # Load data
-with st.spinner("Carregando dados..."):
+with st.spinner("Loading data..."):
     df_raw = load_data()
     if df_raw is None:
-        st.error("Erro ao carregar dados.")
+        st.error("Error loading data.")
         st.stop()
     df = preprocess_data(df_raw)
 
 # Sidebar options
-st.sidebar.header("⚙️ Configurações")
+st.sidebar.header("⚙️ Settings")
 
 aggregation_level = st.sidebar.selectbox(
-    "Nível de Agregação",
-    ["Diário", "Semanal", "Mensal"],
+    "Aggregation Level",
+    ["Daily", "Weekly", "Monthly"],
     index=2
 )
 
 # Map to pandas frequency (offset aliases updated for pandas 2.2+/3.0: "M" -> "ME")
-freq_map = {"Diário": "D", "Semanal": "W", "Mensal": "ME"}
+freq_map = {"Daily": "D", "Weekly": "W", "Monthly": "ME"}
 freq = freq_map[aggregation_level]
 
 # Get time series data
@@ -42,20 +42,20 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     total_revenue = ts_data['Revenue'].sum()
-    st.metric("💰 Receita Total", f"${total_revenue:,.2f}")
+    st.metric("💰 Total Revenue", f"${total_revenue:,.2f}")
 
 with col2:
     total_orders = ts_data['Orders'].sum()
-    st.metric("📦 Total de Pedidos", f"{total_orders:,}")
+    st.metric("📦 Total Orders", f"{total_orders:,}")
 
 with col3:
     avg_daily_revenue = ts_data['Revenue'].mean()
-    st.metric(f"📊 Média {aggregation_level}", f"${avg_daily_revenue:,.2f}")
+    st.metric(f"📊 {aggregation_level} Average", f"${avg_daily_revenue:,.2f}")
 
 st.markdown("---")
 
 # Revenue trend
-st.markdown(f"### 📈 Tendência de Vendas ({aggregation_level})")
+st.markdown(f"### 📈 Sales Trend ({aggregation_level})")
 
 fig = go.Figure()
 
@@ -63,7 +63,7 @@ fig.add_trace(go.Scatter(
     x=ts_data['Date'],
     y=ts_data['Revenue'],
     mode='lines+markers',
-    name='Receita',
+    name='Revenue',
     line=dict(color='#8B5CF6', width=3),
     fill='tozeroy',
     fillcolor='rgba(139, 92, 246, 0.1)',
@@ -79,13 +79,13 @@ fig.add_trace(go.Scatter(
     x=ts_data['Date'],
     y=trend_line,
     mode='lines',
-    name='Tendência',
+    name='Trend',
     line=dict(color='#EF4444', width=2, dash='dash')
 ))
 
 fig.update_layout(
-    xaxis_title='Data',
-    yaxis_title='Receita ($)',
+    xaxis_title='Date',
+    yaxis_title='Revenue ($)',
     hovermode='x unified',
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
@@ -107,7 +107,7 @@ st.plotly_chart(fig, width='stretch')
 st.markdown("---")
 
 # Dual chart: Revenue and Orders
-st.markdown("### 📊 Receita vs Pedidos")
+st.markdown("### 📊 Revenue vs Orders")
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -115,7 +115,7 @@ fig.add_trace(
     go.Bar(
         x=ts_data['Date'],
         y=ts_data['Revenue'],
-        name='Receita',
+        name='Revenue',
         marker_color='#8B5CF6',
         opacity=0.7
     ),
@@ -126,16 +126,16 @@ fig.add_trace(
     go.Scatter(
         x=ts_data['Date'],
         y=ts_data['Orders'],
-        name='Pedidos',
+        name='Orders',
         line=dict(color='#10B981', width=3),
         mode='lines+markers'
     ),
     secondary_y=True,
 )
 
-fig.update_xaxes(title_text="Data")
-fig.update_yaxes(title_text="Receita ($)", secondary_y=False)
-fig.update_yaxes(title_text="Número de Pedidos", secondary_y=True)
+fig.update_xaxes(title_text="Date")
+fig.update_yaxes(title_text="Revenue ($)", secondary_y=False)
+fig.update_yaxes(title_text="Number of Orders", secondary_y=True)
 
 fig.update_layout(
     hovermode='x unified',
@@ -160,7 +160,7 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### 📅 Vendas por Mês")
+    st.markdown("### 📅 Sales by Month")
     
     monthly_sales = df.groupby('MonthName')['TotalAmount'].sum().reindex([
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -185,11 +185,11 @@ with col1:
         xaxis=dict(
             tickmode='array',
             tickvals=list(range(1, 13)),
-            ticktext=['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
-                     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            ticktext=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             showgrid=False
         ),
-        yaxis=dict(title='Receita ($)', showgrid=True, gridcolor='rgba(148, 163, 184, 0.1)'),
+        yaxis=dict(title='Revenue ($)', showgrid=True, gridcolor='rgba(148, 163, 184, 0.1)'),
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -199,12 +199,12 @@ with col1:
     st.plotly_chart(fig, width='stretch')
 
 with col2:
-    st.markdown("### 📆 Vendas por Dia da Semana")
-    
+    st.markdown("### 📆 Sales by Day of Week")
+
     day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     day_sales = df.groupby('DayOfWeek')['TotalAmount'].sum().reindex(day_order)
-    
-    day_labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
+
+    day_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     
     fig = go.Figure(data=[
         go.Bar(
@@ -221,19 +221,19 @@ with col2:
     
     fig.update_layout(
         xaxis=dict(title='', showgrid=False),
-        yaxis=dict(title='Receita ($)', showgrid=True, gridcolor='rgba(148, 163, 184, 0.1)'),
+        yaxis=dict(title='Revenue ($)', showgrid=True, gridcolor='rgba(148, 163, 184, 0.1)'),
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
         height=400
     )
-    
+
     st.plotly_chart(fig, width='stretch')
 
 st.markdown("---")
 
 # Growth analysis
-st.markdown("### 📊 Análise de Crescimento")
+st.markdown("### 📊 Growth Analysis")
 
 if freq == 'ME':
     # Calculate month-over-month growth
@@ -248,12 +248,12 @@ if freq == 'ME':
         marker_color=ts_data['Growth_Color'][1:],
         text=[f'{v:.1f}%' for v in ts_data['Growth'][1:]],
         textposition='outside',
-        name='Crescimento MoM'
+        name='MoM Growth'
     ))
-    
+
     fig.update_layout(
-        xaxis_title='Mês',
-        yaxis_title='Crescimento (%)',
+        xaxis_title='Month',
+        yaxis_title='Growth (%)',
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
         font={'color': '#F1F5F9'},
@@ -270,20 +270,20 @@ if freq == 'ME':
     
     with col1:
         avg_growth = ts_data['Growth'].mean()
-        st.metric("📈 Crescimento Médio MoM", f"{avg_growth:.1f}%")
-    
+        st.metric("📈 Average MoM Growth", f"{avg_growth:.1f}%")
+
     with col2:
         max_growth = ts_data['Growth'].max()
-        st.metric("🚀 Maior Crescimento", f"{max_growth:.1f}%")
-    
+        st.metric("🚀 Highest Growth", f"{max_growth:.1f}%")
+
     with col3:
         min_growth = ts_data['Growth'].min()
-        st.metric("📉 Maior Queda", f"{min_growth:.1f}%")
+        st.metric("📉 Largest Drop", f"{min_growth:.1f}%")
 
 st.markdown("---")
 
 # Insights
-st.markdown("### 💡 Insights de Tendências")
+st.markdown("### 💡 Trend Insights")
 
 col1, col2, col3 = st.columns(3)
 
@@ -292,33 +292,33 @@ with col1:
     best_month_value = monthly_sales.max()
     
     display_insight_box(
-        "Melhor Mês",
-        f"{best_month} teve o melhor desempenho com ${best_month_value:,.2f} em vendas.",
+        "Best Month",
+        f"{best_month} had the best performance with ${best_month_value:,.2f} in sales.",
         "🏆"
     )
 
 with col2:
     best_day = day_sales.idxmax()
-    day_map = {'Monday': 'Segunda', 'Tuesday': 'Terça', 'Wednesday': 'Quarta', 
-               'Thursday': 'Quinta', 'Friday': 'Sexta', 'Saturday': 'Sábado', 'Sunday': 'Domingo'}
-    
+    day_map = {'Monday': 'Monday', 'Tuesday': 'Tuesday', 'Wednesday': 'Wednesday',
+               'Thursday': 'Thursday', 'Friday': 'Friday', 'Saturday': 'Saturday', 'Sunday': 'Sunday'}
+
     display_insight_box(
-        "Melhor Dia",
-        f"{day_map[best_day]} é o dia mais forte em vendas.",
+        "Best Day",
+        f"{day_map[best_day]} is the strongest day for sales.",
         "📅"
     )
 
 with col3:
     if z[0] > 0:
-        trend_text = "crescimento"
+        trend_text = "upward"
         icon = "📈"
     else:
-        trend_text = "queda"
+        trend_text = "downward"
         icon = "📉"
-    
+
     display_insight_box(
-        "Tendência Geral",
-        f"As vendas apresentam tendência de {trend_text} ao longo do período.",
+        "Overall Trend",
+        f"Sales show a {trend_text} trend over the period.",
         icon
     )
 
